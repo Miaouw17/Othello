@@ -68,6 +68,7 @@ namespace Othello
                 }
             }
 
+            // Fill board with rectangle clickabley
             for (int y = 1; y <= row; y++)
             {
                 for (int x = 1; x <= column; x++)
