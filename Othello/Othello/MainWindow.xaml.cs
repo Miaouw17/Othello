@@ -20,27 +20,29 @@ namespace Othello
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const int ROW = 7;
-        private const int COLUMN = 9;
-        private int[,] tabPlayer = new int[COLUMN+1, ROW+1];
+        private const int BOARD_WIDTH = 8;
+        private const int BOARD_HEIGHT = 8;
         private List<Rectangle> caseList = new List<Rectangle>();
         private int turn = 0;
-        private Player p1 = new Player(0, "Trump", new BitmapImage(new Uri(@"trump.png", UriKind.Relative)));
-        private Player p2 = new Player(1, "Hilary", new BitmapImage(new Uri(@"hillary.png", UriKind.Relative)));
+        private Player p1;
+        private Player p2;
+        OthelloBoard board;
 
         public MainWindow()
         {
+            p1 = new Player(0, "Trump", new BitmapImage(new Uri(@"white.png", UriKind.Relative)));
+            p2 = new Player(1, "Hilary", new BitmapImage(new Uri(@"black.png", UriKind.Relative)));
+            board = new OthelloBoard(BOARD_WIDTH, BOARD_HEIGHT);
             InitializeComponent();
             //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
-            GridGeneration(ROW,COLUMN);
-            SetStarterPawn();
-            DisplayBoard();
+            GridGeneration(BOARD_HEIGHT,BOARD_WIDTH);
+            
         }
 
         private void GridGeneration(int row, int column)
         {
             // CreateRow
-            for (int i = 0; i < row + 1; i++)
+            for (int i = 0; i <= row; i++)
             {
                 Board.RowDefinitions.Add(new RowDefinition());
                 if (i != 0)
@@ -54,13 +56,13 @@ namespace Othello
             }
 
             // CreateColumn
-            for (int j = 0; j < column + 1; j++)
+            for (int j = 0; j <= column; j++)
             {
                 Board.ColumnDefinitions.Add(new ColumnDefinition());
                 if (j != 0)
                 {
                     Label columnLabel = new Label();
-                    int index = 64 + j;
+                    int index = 'A'- 1 + j;
                     columnLabel.Content = Encoding.ASCII.GetString(new byte[] { (byte)index });
                     Grid.SetRow(columnLabel, 0);
                     Grid.SetColumn(columnLabel, j);
@@ -74,7 +76,7 @@ namespace Othello
                 for (int x = 1; x <= column; x++)
                 {
                     string name = $"c{x}{y}";
-                    Rectangle rect = new Rectangle() { Name = name, Fill = new SolidColorBrush(System.Windows.Media.Colors.AliceBlue) };
+                    Rectangle rect = new Rectangle() { Name = name, Fill = new SolidColorBrush(Colors.AliceBlue)};
                     rect.MouseLeftButtonDown += X_MouseDown;
                     Grid.SetRow(rect, y);
                     Grid.SetColumn(rect, x);
@@ -82,44 +84,35 @@ namespace Othello
                     caseList.Add(rect);
                 }
             }
-        }
-
-        private void SetStarterPawn()
-        {
-            int start_x = (COLUMN / 2);
-            int start_y = (ROW / 2);
-            tabPlayer[start_x, start_y] = 1;
-            tabPlayer[start_x+1, start_y+1] = 1;
-            tabPlayer[start_x+1, start_y] = -1;
-            tabPlayer[start_x, start_y+1] = -1;
+            DisplayBoard();
         }
 
         private void X_MouseDown(object sender, MouseButtonEventArgs e)
         {
             // Reaction au clic sur un rectangle
-            var mouseWasDownOn = e.Source as FrameworkElement;
-            Rectangle r = (Rectangle)mouseWasDownOn;
-            string elementName = mouseWasDownOn.Name;
-            int x = Convert.ToInt32(elementName.Substring(1,1));
-            int y = Convert.ToInt32(elementName.Substring(elementName.Length-1,1));
-            //string selectedRect = elementName.ToString();
+            string elementName = (e.Source as FrameworkElement).Name; //This is bad
+            int gridX = Convert.ToInt32(elementName.Substring(1,1)); // Works only for x and y < 10
+            int gridY = Convert.ToInt32(elementName.Substring(elementName.Length-1,1));
+            int boardX = gridX - 1;
+            int boardY = gridY - 1;
             //MessageBox.Show(elementName);
 
-            if (IsPlayable(x,y,true))
+            if (IsPlayable(boardX, boardY, true))
             {
                 if (turn % 2 == 0)
                 {
-                    tabPlayer[x, y] = 1;
+                    board.Play(boardX, boardY, 1);
                     //r.Fill = new ImageBrush(p1.getImage());
                 }
                 else
                 {
-                    tabPlayer[x, y] = -1;
+                    board.Play(boardX, boardY, -1);
                     //r.Fill = new ImageBrush(p2.getImage());
                 }
                 //r.Fill = new ImageBrush(new BitmapImage(new Uri(@"trump.png", UriKind.Relative)));
                 //MessageBox.Show(elementName);
-                Console.WriteLine(DebugTabPlayer());
+                Console.WriteLine(board.ToString());
+                //board.DisplayBoard();
             }
             else
             {
@@ -137,19 +130,19 @@ namespace Othello
 
         private void DisplayBoard()
         {
-            for(int y=1; y<ROW+1; y++)
+            for(int y=1; y<=board.Height; y++)
             {
-                for(int x=1; x<COLUMN+1; x++)
+                for(int x=1; x<=board.Width; x++)
                 {
                     string name = $"c{x}{y}";
                    
-                    if (tabPlayer[x,y] == 1)
+                    if (board.Values[y-1,x-1] == 1) //Blanc
                     {
                         Rectangle r = caseList.Find(rec => rec.Name == name);
                         //Rectangle r = (Rectangle)Board.FindName(name);
                         r.Fill = new ImageBrush(p1.getImage());
                     }
-                    else if(tabPlayer[x,y] == -1)
+                    else if(board.Values[y-1,x-1] == -1) //Noir
                     {
                         Rectangle r = caseList.Find(rec => rec.Name == name);
                         //Rectangle r = (Rectangle)Board.FindName(name);
@@ -164,31 +157,14 @@ namespace Othello
             MessageBox.Show(e.Source.ToString());
         }
 
-        private bool IsPlayable(int column, int row, bool isWhite)
+        private bool IsPlayable(int y, int x, bool isWhite)
         {
-            if(tabPlayer[column, row] == 0)
+            if(board.Values[y, x] == 0)
             {
                 // APPLIQUER REGLE DE JEU
                 return true;
             }
-            else
-            {
-                return false;
-            }
-        }
-
-        private string DebugTabPlayer()
-        {
-            string debug = "";
-            for(int y=1;y<ROW+1;y++)
-            {
-                for(int x=1;x<COLUMN+1;x++)
-                {
-                    debug += "[" + tabPlayer[x, y] + "]";
-                }
-                debug += "\n";
-            }
-            return debug;
+            return false;
         }
     }
 }
