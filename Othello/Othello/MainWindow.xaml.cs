@@ -75,7 +75,7 @@ namespace Othello
                 for (int x = 1; x <= column; x++)
                 {
                     string name = $"c{x}{y}";
-                    Rectangle rect = new Rectangle() { Name = name, Fill = new SolidColorBrush(Colors.AliceBlue)};
+                    Rectangle rect = new Rectangle() { Name = name, Fill = new SolidColorBrush(Colors.LightGreen)};
                     rect.MouseLeftButtonDown += X_MouseDown;
                     Grid.SetRow(rect, y);
                     Grid.SetColumn(rect, x);
@@ -96,7 +96,7 @@ namespace Othello
             int boardY = gridY - 1;
             //MessageBox.Show(elementName);
 
-            if (IsPlayable(boardX, boardY, true))
+            if (IsPlayable(boardX, boardY))
             {
                 if (turn % 2 == 0)
                 {
@@ -110,7 +110,7 @@ namespace Othello
                 }
                 //r.Fill = new ImageBrush(new BitmapImage(new Uri(@"trump.png", UriKind.Relative)));
                 //MessageBox.Show(elementName);
-                Console.WriteLine(board.ToString());
+                //Console.WriteLine(board.ToString());
                 //board.DisplayBoard();
             }
             else
@@ -129,26 +129,26 @@ namespace Othello
 
         private void DisplayBoard()
         {
+
             for(int y=1; y<=board.Height; y++)
             {
                 for(int x=1; x<=board.Width; x++)
                 {
                     string name = $"c{x}{y}";
                    
-                    if (board.Values[y-1,x-1] == 1) //Blanc
+                    if (board[ix(x-1, y-1)] == 1) //Blanc
                     {
                         Rectangle r = caseList.Find(rec => rec.Name == name);
-                        //Rectangle r = (Rectangle)Board.FindName(name);
                         r.Fill = new ImageBrush(p1.getImage());
                     }
-                    else if(board.Values[y-1,x-1] == -1) //Noir
+                    else if(board[ix(x-1, y-1)] == -1) //Noir
                     {
                         Rectangle r = caseList.Find(rec => rec.Name == name);
-                        //Rectangle r = (Rectangle)Board.FindName(name);
                         r.Fill = new ImageBrush(p2.getImage());
                     }
                 }
             }
+            
         }
 
         private void Board_MouseDown(object sender, RoutedEventArgs e)
@@ -156,14 +156,23 @@ namespace Othello
             MessageBox.Show(e.Source.ToString());
         }
 
-        private bool IsPlayable(int y, int x, bool isWhite)
+        private bool IsPlayable(int x, int y)
         {
-            if(board.Values[y, x] == 0)
+            if(board[ix(x, y)] == 0)
             {
                 // APPLIQUER REGLE DE JEU
                 return true;
             }
             return false;
         }
+
+        private int ix(int x, int y)
+        {
+            return x + y * board.Width;
+        }
     }
+
+    /* Logique : Il ne devrait pas y avoir de fonction "IsPlayable". On devrait plutôt ne laisser le user cliquer que sur les cases qui sont playable.
+     * de cette façon il y a pas besoin de checker si elles le sont .
+     */
 }

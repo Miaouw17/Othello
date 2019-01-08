@@ -8,11 +8,14 @@ namespace Othello
 {
     class OthelloBoard
     {
-        private int[,] values;
+        private int[] values;
         private int width;
         private int height;
 
-        public int[,] Values { get => values; }
+        public int this[int i] {
+            get => values[i];
+            set => values[i] = value;
+        }
         public int Width { get => width;}
         public int Height { get => height;}
 
@@ -21,7 +24,7 @@ namespace Othello
         {
             this.height = height;
             this.width = width;
-            values = new int[height, width];
+            values = new int[height * width];
             MakeInitialBoard();
         }
 
@@ -29,16 +32,33 @@ namespace Othello
         {
             for (var y = 0; y < width; y++)
                 for (var x = 0; x < height; x++)
-                    values[y,x] = 0;
-            values[height / 2 - 1, width / 2 - 1] = 1;
-            values[height / 2 , width / 2 - 1] = -1;
-            values[height / 2 - 1, width / 2] = -1;
-            values[height / 2, width / 2] = 1;
+                    values[ix(x, y)] = 0;
+            int yMid = height >> 1;
+            int xMid = width >> 1;
+            values[ix(yMid - 1, xMid - 1)] = 1;
+            values[ix(yMid, xMid - 1)] = -1;
+            values[ix(yMid - 1, xMid)] = -1;
+            values[ix(yMid, xMid)] = 1;
         }
 
-        public void Play(int x, int y, int value)
+        public void Play(int x, int y, int v)
         {
-            values[y, x] = value;
+            values[ix(x, y)] = v;
+            List<int> verticalValues = (values.Where((val, index) => (index) % width == x)).ToList();
+            List<int> horizontalValues = (values.Where((val, index) => index / width == y)).ToList();
+            List<int> negDiagonalValues;
+            List<int> posDiagonalValues;
+            if (x > y) negDiagonalValues = (values.Where((val, index) => index % (width + 1) == (x + width * y) % (width + 1) && index % width >= (x + width * y) % (width + 1))).ToList();
+            else negDiagonalValues = (values.Where((val, index) => index % (width + 1) == (x + width * y) % (width + 1) && index % width < (x + width * y) % (width + 1))).ToList();
+            if (x + y < width) posDiagonalValues = (values.Where((val, index) => index % (width - 1) == (x + width * y) % (width - 1) && index % width <= (x + width * y) % (width - 1) && index / width <= (x + width * y) % (width - 1))).ToList();
+            else posDiagonalValues = (values.Where((val, index) => index % (width - 1) == (x + width * y) % (width - 1) && index % width > (x + width * y) % (width - 1) && index / width > (x + width * y) % (width - 1))).ToList();
+            Console.WriteLine($"Play x:{x} y:{y} index:{x+width*y}");
+            Console.WriteLine($"Count(diagMin):{negDiagonalValues.Count()}");
+            foreach (int e in negDiagonalValues)
+            {
+                Console.Write($"[{e}]");
+            }
+            Console.WriteLine("");
         }
 
         public void DisplayBoard()
@@ -47,7 +67,7 @@ namespace Othello
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    Console.Write($"{values[y,x]}");
+                    Console.Write($"{values[ix(x, y)]}");
                 }
                 Console.Write(Environment.NewLine + Environment.NewLine);
             }
@@ -61,13 +81,16 @@ namespace Othello
             {
                 for (int x = 0; x < width; x++)
                 {
-                    Console.Write($"[{values[y,x]}]");
-                    debug.Append($"[{values[y,x]}]");
+                    debug.Append($"[{values[ix(x, y)]}]");
                 }
                 debug.Append("\n");
             }
             Console.WriteLine(debug.ToString());
             return debug.ToString();
+        }
+        private int ix(int x, int y)
+        {
+            return x + y * width;
         }
     }
 }
