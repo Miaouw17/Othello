@@ -20,8 +20,8 @@ namespace Othello
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const int BOARD_WIDTH = 8;
-        private const int BOARD_HEIGHT = 8;
+        private const int BOARD_WIDTH = 9;
+        private const int BOARD_HEIGHT = 7;
         private List<Rectangle> caseList = new List<Rectangle>();
         private int turn = 0;
         private Player p1;
