@@ -56,14 +56,15 @@ namespace Othello
         /// <param name="v">value of the current player (1 or -1)</param>
         public void Play(int x, int y, int v)
         {
-            //Console.WriteLine($"Play x:{x} y:{y} index:{x+width*y}");
+            int index = ix(x,y);
+            Console.WriteLine($"Play x:{x} y:{y} index:{index}");
 
             /* Here we assume that the move is valid and doable.
              * What we have to do is to find which cell will switch color.
              * To do so we need to save every indices that are in same lines (vertical and horizontal)
              * and diagonals (positive and negative) as the current cell (x,y).
              */
-            values[ix(x, y)] = v;
+            values[index] = v;
             List<int> verticalIndices = getVerticalIndices(x, y);       // Board indices in vertical line relative to (x,y) cell. 
             List<int> horizontalIndices = getHorizontalIndices(x, y);   // Board indices in horizontal line relative to (x,y) cell. 
             List<int> negativeDiagonalIndices = getNegativeDiagonalIndices(x, y); // Board indices in negative diagonal (\), relative to (x,y) cell.
@@ -80,7 +81,7 @@ namespace Othello
              * and switch their owner.
              */
 
-            List<int> listOfFlippedDisksIndices = getFlippedDisksIndices(verticalIndices, horizontalIndices, negativeDiagonalIndices, positiveDiagonalIndices, v);
+            List<int> listOfFlippedDisksIndices = getAllFlips(verticalIndices, horizontalIndices, negativeDiagonalIndices, positiveDiagonalIndices, v, index);
             foreach(int diskIndex in listOfFlippedDisksIndices)
             {
                 values[diskIndex] = v;
@@ -154,21 +155,101 @@ namespace Othello
             return (indices.Where((val, index) => (index) % width == x)).ToList();
         }
 
-        private List<int> getFlippedDisksIndices(List<int> verticalIndices, List<int> horizontalIndices, List<int> negDiagonalIndices, List<int> posDiagonalIndices, int v)
+        private List<int> getAllFlips(List<int> verticalIndices, List<int> horizontalIndices, List<int> negDiagonalIndices, List<int> posDiagonalIndices, int v, int index)
         {
-            List<int> listOfFlippedDisksIndices = new List<int>();
-            List<int> verticalValues = getListOfValuesFromListOfIndices(verticalIndices);
-            List<int> horizontalValues = getListOfValuesFromListOfIndices(horizontalIndices);
-            List<int> negDiagonalValues = getListOfValuesFromListOfIndices(negDiagonalIndices);
-            List<int> posDiagonalValues = getListOfValuesFromListOfIndices(posDiagonalIndices);
+            List<int> allFlips = new List<int>();
+            allFlips.AddRange(getFlips(verticalIndices, getListOfValuesFromListOfIndices(verticalIndices), v, index));
+            allFlips.AddRange(getFlips(horizontalIndices, getListOfValuesFromListOfIndices(horizontalIndices), v, index));
+            allFlips.AddRange(getFlips(posDiagonalIndices, getListOfValuesFromListOfIndices(posDiagonalIndices), v, index));
+            allFlips.AddRange(getFlips(negDiagonalIndices, getListOfValuesFromListOfIndices(negDiagonalIndices), v, index));
+            return allFlips;
+        }
 
-            //print("VerticalIndices : ", verticalIndices); //OK
-            //print("VerticalValues : ", verticalValues); //OK
+        private List<int> getFlips(List<int> indices, List<int> values, int v, int index)
+        {
+            List<int> flips = new List<int>();
+            print("VerticalValues : ", values);
+            print("VerticalIndices : ", indices);
 
-            //TODO
+            int indexOfIndex = indices.IndexOf(index);
+            Console.WriteLine($"Index of index : {indexOfIndex}");
 
-            //listOfFlippedDisksIndices.Add(22);
-            return listOfFlippedDisksIndices;
+            List<int> sublist1 = values.GetRange(0, indexOfIndex);
+            List<int> sublist2 = values.GetRange(indexOfIndex + 1, values.Count() - sublist1.Count() - 1);
+            sublist1.Reverse();
+
+            print("SubList1 : ", sublist1);
+            print("SubList2 : ", sublist2);
+
+
+            // Not happy at all with this version but works fine enough for now.
+            List<int> tmpList = new List<int>();
+            bool validated = false;
+            int indexInSublist = 0;
+            if (sublist1.Count() >= 2)
+            {
+                foreach (int value in sublist1)
+                {
+                    if (value == v * -1)
+                    {
+                        tmpList.Add(indices.ElementAt(indexOfIndex - indexInSublist - 1));
+                    }
+                    else if (value == 0)
+                    {
+                        break;
+                    }
+                    else if (value == v)
+                    {
+                        validated = true;
+                        break;
+                    }
+                    indexInSublist++;
+                }
+                if (validated)
+                {
+                    foreach (int i in tmpList)
+                    {
+                        flips.Add(i);
+                    }
+                }
+            }
+            tmpList.Clear();
+            validated = false;
+            indexInSublist = 0;
+            if (sublist2.Count() >= 2)
+            {
+                foreach (int value in sublist2)
+                {
+                    if (value == 0)
+                    {
+                        break;
+                    }
+                    else if (value == v * -1)
+                    {
+                        tmpList.Add(indices.ElementAt(indexOfIndex + 1 + indexInSublist));
+                    }
+                    else if (value == v)
+                    {
+                        validated = true;
+                        break;
+                    }
+                    indexInSublist++;
+                }
+                if (validated)
+                {
+                    foreach (int i in tmpList)
+                    {
+                        flips.Add(i);
+                    }
+                }
+            }
+
+            return flips;
+        }
+
+        private List<int> getFlippedIndicesFromListOfValues(List<int> listOfValues, int v, int index)
+        {
+            throw new NotImplementedException();
         }
 
         private List<int> getListOfValuesFromListOfIndices(List<int> listOfIndices)
