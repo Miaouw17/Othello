@@ -30,8 +30,8 @@ namespace Othello
 
         public MainWindow()
         {
-            p1 = new Player(0, "Trump", new BitmapImage(new Uri(@"white.png", UriKind.Relative)));
-            p2 = new Player(1, "Hilary", new BitmapImage(new Uri(@"black.png", UriKind.Relative)));
+            p1 = new Player(0, "Trump", new BitmapImage(new Uri(@"trump.png", UriKind.Relative)));
+            p2 = new Player(1, "Hilary", new BitmapImage(new Uri(@"hillary.png", UriKind.Relative)));
             board = new OthelloBoard(BOARD_WIDTH, BOARD_HEIGHT);
             InitializeComponent();
             //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
