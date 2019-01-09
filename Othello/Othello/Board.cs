@@ -151,13 +151,8 @@ namespace Othello
         {
             return (indices.Where((val, index) => (index) % width == x)).ToList();
         }
-<<<<<<< HEAD
-  
-        private List<int> getAllFlips(List<int> verticalIndices, List<int> horizontalIndices, List<int> negDiagonalIndices, List<int> posDiagonalIndices, int v, int index)
-=======
 
         public List<int> getAllFlips(int x, int y, int v)
->>>>>>> origin/master
         {
             List<int> verticalIndices = getVerticalIndices(x, y);       // Board indices in vertical line relative to (x,y) cell. 
             List<int> horizontalIndices = getHorizontalIndices(x, y);   // Board indices in horizontal line relative to (x,y) cell. 
