@@ -65,10 +65,7 @@ namespace Othello
              * and diagonals (positive and negative) as the current cell (x,y).
              */
             values[index] = v;
-            List<int> verticalIndices = getVerticalIndices(x, y);       // Board indices in vertical line relative to (x,y) cell. 
-            List<int> horizontalIndices = getHorizontalIndices(x, y);   // Board indices in horizontal line relative to (x,y) cell. 
-            List<int> negativeDiagonalIndices = getNegativeDiagonalIndices(x, y); // Board indices in negative diagonal (\), relative to (x,y) cell.
-            List<int> positiveDiagonalIndices = getPositiveDiagonalIndices(x, y); // Board indices in positive diagonal (/), relative to (x,y) cell.
+            
 
             /* Now that all indices are saved, we need to define which disk will be flipped.
              * The rule for a valid move is the following :
@@ -81,7 +78,7 @@ namespace Othello
              * and switch their owner.
              */
 
-            List<int> listOfFlippedDisksIndices = getAllFlips(verticalIndices, horizontalIndices, negativeDiagonalIndices, positiveDiagonalIndices, v, index);
+            List<int> listOfFlippedDisksIndices = getAllFlips(x, y, v);
             foreach(int diskIndex in listOfFlippedDisksIndices)
             {
                 values[diskIndex] = v;
@@ -154,32 +151,41 @@ namespace Othello
         {
             return (indices.Where((val, index) => (index) % width == x)).ToList();
         }
+<<<<<<< HEAD
   
         private List<int> getAllFlips(List<int> verticalIndices, List<int> horizontalIndices, List<int> negDiagonalIndices, List<int> posDiagonalIndices, int v, int index)
+=======
+
+        public List<int> getAllFlips(int x, int y, int v)
+>>>>>>> origin/master
         {
+            List<int> verticalIndices = getVerticalIndices(x, y);       // Board indices in vertical line relative to (x,y) cell. 
+            List<int> horizontalIndices = getHorizontalIndices(x, y);   // Board indices in horizontal line relative to (x,y) cell. 
+            List<int> negativeDiagonalIndices = getNegativeDiagonalIndices(x, y); // Board indices in negative diagonal (\), relative to (x,y) cell.
+            List<int> positiveDiagonalIndices = getPositiveDiagonalIndices(x, y); // Board indices in positive diagonal (/), relative to (x,y) cell.
             List<int> allFlips = new List<int>();
-            allFlips.AddRange(getFlips(verticalIndices, getListOfValuesFromListOfIndices(verticalIndices), v, index));
-            allFlips.AddRange(getFlips(horizontalIndices, getListOfValuesFromListOfIndices(horizontalIndices), v, index));
-            allFlips.AddRange(getFlips(posDiagonalIndices, getListOfValuesFromListOfIndices(posDiagonalIndices), v, index));
-            allFlips.AddRange(getFlips(negDiagonalIndices, getListOfValuesFromListOfIndices(negDiagonalIndices), v, index));
+            allFlips.AddRange(getFlips(verticalIndices, getListOfValuesFromListOfIndices(verticalIndices), v, ix(x,y)));
+            allFlips.AddRange(getFlips(horizontalIndices, getListOfValuesFromListOfIndices(horizontalIndices), v, ix(x, y)));
+            allFlips.AddRange(getFlips(positiveDiagonalIndices, getListOfValuesFromListOfIndices(positiveDiagonalIndices), v, ix(x, y)));
+            allFlips.AddRange(getFlips(negativeDiagonalIndices, getListOfValuesFromListOfIndices(negativeDiagonalIndices), v, ix(x, y)));
             return allFlips;
         }
 
         private List<int> getFlips(List<int> indices, List<int> values, int v, int index)
         {
             List<int> flips = new List<int>();
-            print("VerticalValues : ", values);
-            print("VerticalIndices : ", indices);
+            //print("VerticalValues : ", values);
+            //print("VerticalIndices : ", indices);
 
             int indexOfIndex = indices.IndexOf(index);
-            Console.WriteLine($"Index of index : {indexOfIndex}");
+            //Console.WriteLine($"Index of index : {indexOfIndex}");
 
             List<int> sublist1 = values.GetRange(0, indexOfIndex);
             List<int> sublist2 = values.GetRange(indexOfIndex + 1, values.Count() - sublist1.Count() - 1);
             sublist1.Reverse();
 
-            print("SubList1 : ", sublist1);
-            print("SubList2 : ", sublist2);
+            //print("SubList1 : ", sublist1);
+            //print("SubList2 : ", sublist2);
 
 
             // Not happy at all with this version but works fine enough for now.
