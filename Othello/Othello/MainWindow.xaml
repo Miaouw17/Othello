@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Othello"
         mc:Ignorable="d"
-        Title="MainWindow" Height="650" Width="650">
+        Title="MainWindow" Height="649" Width="832">
 
-    <StackPanel Orientation="Vertical">
+    <StackPanel Orientation="Horizontal" Margin="0,0,2,0">
         <Border Height="600" Width="600" HorizontalAlignment="Left" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2">
             <Grid x:Name="Board" ShowGridLines="True" Button.Click="Board_MouseDown">
                 <Grid.ColumnDefinitions>
@@ -16,5 +16,11 @@
                 </Grid.RowDefinitions>
             </Grid>
         </Border>
+        <StackPanel Orientation="Vertical" Width="219" HorizontalAlignment="Center" VerticalAlignment="Center" Height="102" Margin="0,277,0,239">
+            <Label x:Name="ScoreJ1" Content="ScoreJ1" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Label x:Name="ScoreJ2" Content="ScoreJ2" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Button Content="Sauvegarder" Width="75" Click="SaveGame_Click"/>
+            <Button Content="Retour" Margin="72,0" Click="BackMenu_Click"/>
+        </StackPanel>
     </StackPanel>
 </Window>
