@@ -171,6 +171,16 @@ namespace Othello
         {
             return x + y * board.Width;
         }
+
+        private void SaveGame_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BackMenu_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 
     /* Logique : Il ne devrait pas y avoir de fonction "IsPlayable". On devrait plutôt ne laisser le user cliquer que sur les cases qui sont playable.

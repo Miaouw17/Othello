@@ -154,7 +154,7 @@ namespace Othello
         {
             return (indices.Where((val, index) => (index) % width == x)).ToList();
         }
-
+  
         private List<int> getAllFlips(List<int> verticalIndices, List<int> horizontalIndices, List<int> negDiagonalIndices, List<int> posDiagonalIndices, int v, int index)
         {
             List<int> allFlips = new List<int>();
