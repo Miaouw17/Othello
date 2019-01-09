@@ -89,53 +89,49 @@ namespace Othello
 
         private void X_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            Console.Write("ALO");
             // Reaction au clic sur un rectangle
             string elementName = (e.Source as FrameworkElement).Name; //This is bad
             int gridX = Convert.ToInt32(elementName.Substring(1,1)); // Works only for x and y < 10
             int gridY = Convert.ToInt32(elementName.Substring(elementName.Length-1,1));
             int boardX = gridX - 1;
             int boardY = gridY - 1;
-            //MessageBox.Show(elementName);
-
-            if (IsPlayable(boardX, boardY))
+            
+            if(IsPlayable(boardX,boardY))
             {
-                if (turn % 2 == 0)
-                {
-                    board.Play(boardX, boardY, 1);
-                    //r.Fill = new ImageBrush(p1.getImage());
-                }
-                else
-                {
-                    board.Play(boardX, boardY, -1);
-                    //r.Fill = new ImageBrush(p2.getImage());
-                }
-                //r.Fill = new ImageBrush(new BitmapImage(new Uri(@"trump.png", UriKind.Relative)));
-                //MessageBox.Show(elementName);
-                //Console.WriteLine(board.ToString());
-                //board.DisplayBoard();
+                board.Play(boardX, boardY, turn % 2 == 0 ? 1 : -1);
+                // incremente turn
+                turn += 1;
             }
-            else
-            {
-                //MessageBox.Show("nope");
-            }
-
-            // displayBoard
+            
             DisplayBoard();
+            UpdatePlayableCells();
+        }
 
-            // incremente turn
-            turn += 1;
-
-            // throw new NotImplementedException();
+        private void UpdatePlayableCells()
+        {
+            for (int y = 0; y < board.Height; y++)
+            {
+                for (int x = 0; x < board.Width; x++)
+                {
+                    if (IsPlayable(x,y))
+                    {
+                        
+                    }
+                }
+            }
         }
 
         private void DisplayBoard()
         {
-
             for(int y=1; y<=board.Height; y++)
             {
                 for(int x=1; x<=board.Width; x++)
                 {
                     string name = $"c{x}{y}";
+                    Rectangle r_base = caseList.Find(rec => rec.Name == name);
+                    r_base.Fill = new SolidColorBrush(Colors.LightGreen);
+                    
                    
                     if (board[ix(x-1, y-1)] == 1) //Blanc
                     {
@@ -146,6 +142,14 @@ namespace Othello
                     {
                         Rectangle r = caseList.Find(rec => rec.Name == name);
                         r.Fill = new ImageBrush(p2.getImage());
+                    }
+                    else if (board[ix(x - 1, y - 1)] == 0)
+                    {
+                        if(IsPlayable(x-1, y-1))
+                        {
+                            Rectangle r = caseList.Find(rec => rec.Name == name);
+                            r.Fill = new SolidColorBrush(Colors.Red);
+                        }
                     }
                 }
             }
@@ -159,12 +163,7 @@ namespace Othello
 
         private bool IsPlayable(int x, int y)
         {
-            if(board[ix(x, y)] == 0)
-            {
-                // APPLIQUER REGLE DE JEU
-                return true;
-            }
-            return false;
+            return (board[ix(x, y)] == 0) && (board.getAllFlips(x,y,turn%2==0?1:-1).Count() != 0);
         }
 
         private int ix(int x, int y)
