@@ -55,6 +55,7 @@ namespace Othello
                     width = firstval.Count();
                     values = new int[height * width];
 
+                    // parce que le reader est deja a la fin de la premiere ligne
                     foreach(var v in firstval)
                     {
                         if (v != "")
@@ -64,6 +65,7 @@ namespace Othello
                         }
                     }
 
+                    // débute à la 2eme ligne (moyen d'opti mais j'aimerais que ça marche avant)
                     while (!reader.EndOfStream)
                     {
                         var line = reader.ReadLine();
