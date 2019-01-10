@@ -10,7 +10,7 @@
 
     <StackPanel Orientation="Horizontal" Margin="0,0,2,0" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
         <Border Height="600" Width="600" HorizontalAlignment="Left" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2">
-            <Grid x:Name="Board" ShowGridLines="True" Button.Click="Board_MouseDown">
+            <Grid x:Name="Board" ShowGridLines="False" Button.Click="Board_MouseDown">
                 <Grid.ColumnDefinitions>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>

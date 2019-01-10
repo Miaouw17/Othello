@@ -7,6 +7,4 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="800">
     <Frame x:Name="frame" NavigationUIVisibility="Hidden" HorizontalAlignment="Left" Height="768" VerticalAlignment="Top" Width="790"/>
-
-
 </Window>

@@ -23,7 +23,6 @@ namespace Othello
         public MainWindow()
         {
             InitializeComponent();
-
             Loaded += MainWindow_Loaded;
         }
        
