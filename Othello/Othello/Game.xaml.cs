@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,7 +44,6 @@ namespace Othello
             InitializeComponent();
             //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
-
         }
 
         private void GridGeneration(int row, int column)
@@ -178,8 +179,19 @@ namespace Othello
 
         private void SaveGame_Click(object sender, RoutedEventArgs e)
         {
-            string filename = "save.txt";
-            Console.Write(board);
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Text file|*.txt|Csv file|*.csv";
+            saveFileDialog.Title = "Save your game";
+            saveFileDialog.ShowDialog();
+
+            // If the file name is not an empty string open it for saving.  
+            if (saveFileDialog.FileName != "")
+            {
+                using (StreamWriter writetext = new StreamWriter(saveFileDialog.FileName))
+                {
+                    writetext.WriteLine(board);
+                }
+            }
         }
 
         private void BackMenu_Click(object sender, RoutedEventArgs e)

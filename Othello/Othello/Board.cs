@@ -34,6 +34,23 @@ namespace Othello
             MakeInitialBoard();
         }
 
+        public OthelloBoard(int width, int height, int[] values)
+        {
+            this.height = height;
+            this.width = width;
+            values = new int[height * width];
+            indices = new int[height * width];
+            for (int i = 0; i < height * width; i++)
+            {
+                indices[i] = i;
+            }
+
+            for (int i = 0; i < height * width; i++)
+            {
+                this.values[i] = values[i];
+            }
+        }
+
         private void MakeInitialBoard()
         {
             for (var i = 0; i < width * height; i++)
@@ -283,7 +300,11 @@ namespace Othello
             {
                 for (int x = 0; x < width; x++)
                 {
-                    debug.Append($"[{values[ix(x, y)]}]");
+                    debug.Append($"{values[ix(x, y)]}");
+                    if(x < width-1)
+                    {
+                        debug.Append(",");
+                    }
                 }
                 debug.Append("\n");
             }
