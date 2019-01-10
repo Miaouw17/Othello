@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Othello"
         mc:Ignorable="d"
-        Title="MainWindow" Height="649" Width="832">
+        Title="MainWindow" Height="1000" Width="1000">
 
     <StackPanel Orientation="Horizontal" Margin="0,0,2,0">
-        <Border Height="1000" Width="1000" HorizontalAlignment="Left" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2">
+        <Border Height="1000" Width="1000" HorizontalAlignment="Left" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="0">
             <Grid x:Name="Board" ShowGridLines="False" Button.Click="Board_MouseDown">
                 <Grid.ColumnDefinitions>
                 </Grid.ColumnDefinitions>
