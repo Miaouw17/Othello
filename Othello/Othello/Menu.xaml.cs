@@ -27,7 +27,7 @@ namespace Othello
 
         private void NewGame_Click(object sender, RoutedEventArgs e)
         {
-
+            this.NavigationService.Navigate(new Game());
         }
 
         private void LoadGame_Click(object sender, RoutedEventArgs e)
