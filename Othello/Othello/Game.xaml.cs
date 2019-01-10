@@ -31,7 +31,7 @@ namespace Othello
         private BitmapImage emptyFrame;
         private BitmapImage nextFrameBlack;
         private BitmapImage nextFrameWhite;
-        OthelloBoard board;
+        private OthelloBoard board;
 
         public Game()
         {
@@ -45,6 +45,19 @@ namespace Othello
             //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
         }
+
+        /*public Game(OthelloBoard board)
+        {
+            p1 = new Player(0, "Trump", new BitmapImage(new Uri(@"framewhite.jpg", UriKind.Relative)));
+            p2 = new Player(1, "Hilary", new BitmapImage(new Uri(@"frameblack.jpg", UriKind.Relative)));
+            emptyFrame = new BitmapImage(new Uri(@"frameempty.jpg", UriKind.Relative));
+            nextFrameBlack = new BitmapImage(new Uri(@"framenextblack.jpg", UriKind.Relative));
+            nextFrameWhite = new BitmapImage(new Uri(@"framenextwhite.jpg", UriKind.Relative));
+            this.board = getBoardFromSave();
+            InitializeComponent();
+            //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
+            GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
+        }*/
 
         private void GridGeneration(int row, int column)
         {

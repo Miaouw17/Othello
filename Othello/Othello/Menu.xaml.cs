@@ -81,14 +81,15 @@ namespace Othello
                     }
                     Console.WriteLine(width);
                     Console.WriteLine(height-1);
-                    for (int i = 0; i <= index; i++)
+                    /*for (int i = 0; i <= index; i++)
                     {
                         Console.Write(values[i]);
                         if(i % width == 0)
                         {
                             Console.WriteLine();
                         }
-                    }
+                    }*/
+                    this.NavigationService.Navigate(new Game(new OthelloBoard(width, height, values)));
                 }
             }
         }
