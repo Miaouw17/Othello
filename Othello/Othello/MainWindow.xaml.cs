@@ -20,18 +20,24 @@ namespace Othello
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const int BOARD_WIDTH = 9;
-        private const int BOARD_HEIGHT = 7;
+        private const int BOARD_WIDTH = 8;
+        private const int BOARD_HEIGHT = 8;
         private List<Rectangle> caseList = new List<Rectangle>();
         private int turn = 0;
         private Player p1;
         private Player p2;
+        private BitmapImage emptyFrame;
+        private BitmapImage nextFrameBlack;
+        private BitmapImage nextFrameWhite;
         OthelloBoard board;
 
         public MainWindow()
         {
-            p1 = new Player(0, "Trump", new BitmapImage(new Uri(@"trump.png", UriKind.Relative)));
-            p2 = new Player(1, "Hilary", new BitmapImage(new Uri(@"hillary.png", UriKind.Relative)));
+            p1 = new Player(0, "Trump", new BitmapImage(new Uri(@"framewhite.jpg", UriKind.Relative)));
+            p2 = new Player(1, "Hilary", new BitmapImage(new Uri(@"frameblack.jpg", UriKind.Relative)));
+            emptyFrame = new BitmapImage(new Uri(@"frameempty.jpg", UriKind.Relative));
+            nextFrameBlack = new BitmapImage(new Uri(@"framenextblack.jpg", UriKind.Relative));
+            nextFrameWhite = new BitmapImage(new Uri(@"framenextwhite.jpg", UriKind.Relative));
             board = new OthelloBoard(BOARD_WIDTH, BOARD_HEIGHT);
             InitializeComponent();
             //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
@@ -130,7 +136,7 @@ namespace Othello
                 {
                     string name = $"c{x}{y}";
                     Rectangle r_base = caseList.Find(rec => rec.Name == name);
-                    r_base.Fill = new SolidColorBrush(Colors.LightGreen);
+                    r_base.Fill = new ImageBrush(emptyFrame);
                     
                    
                     if (board[ix(x-1, y-1)] == 1) //Blanc
@@ -148,7 +154,7 @@ namespace Othello
                         if(IsPlayable(x-1, y-1))
                         {
                             Rectangle r = caseList.Find(rec => rec.Name == name);
-                            r.Fill = new SolidColorBrush(Colors.Red);
+                            r.Fill = new ImageBrush(turn % 2 == 0 ? nextFrameWhite : nextFrameBlack);
                         }
                     }
                 }

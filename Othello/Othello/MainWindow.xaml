@@ -8,8 +8,8 @@
         Title="MainWindow" Height="649" Width="832">
 
     <StackPanel Orientation="Horizontal" Margin="0,0,2,0">
-        <Border Height="600" Width="600" HorizontalAlignment="Left" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2">
-            <Grid x:Name="Board" ShowGridLines="True" Button.Click="Board_MouseDown">
+        <Border Height="1000" Width="1000" HorizontalAlignment="Left" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2">
+            <Grid x:Name="Board" ShowGridLines="False" Button.Click="Board_MouseDown">
                 <Grid.ColumnDefinitions>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
