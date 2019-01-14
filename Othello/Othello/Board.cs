@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Othello
 {
-    class OthelloBoard /*: IPlayable.IPlayable*/
+    class OthelloBoard : IPlayable.IPlayable
     {
         private int[] values;
         private int[] indices;
@@ -34,7 +34,7 @@ namespace Othello
             MakeInitialBoard();
         }
 
-        public OthelloBoard(int width, int height, int[] values)
+        public OthelloBoard(int width, int height, int[] board)
         {
             this.height = height;
             this.width = width;
@@ -47,7 +47,7 @@ namespace Othello
 
             for (int i = 0; i < height * width; i++)
             {
-                this.values[i] = values[i];
+                this.values[i] = board[i];
             }
         }
 
@@ -329,6 +329,57 @@ namespace Othello
         {
             Console.Write(s);
             print(l);
+        }
+
+        public string GetName()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsPlayable(int column, int line, bool isWhite)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool PlayMove(int column, int line, bool isWhite)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int[,] GetBoard()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetWhiteScore()
+        {
+            int score = 0;
+            foreach (var v in values)
+            {
+                if (v == 1)
+                {
+                    score++;
+                }
+            }
+            return score;
+        }
+
+        public int GetBlackScore()
+        {
+            int score = 0;
+            foreach (var v in values)
+            {
+                if (v == -1)
+                {
+                    score++;
+                }
+            }
+            return score;
         }
     }
 }
