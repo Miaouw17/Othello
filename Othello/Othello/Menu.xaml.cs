@@ -89,7 +89,7 @@ namespace Othello
                             Console.WriteLine();
                         }
                     }*/
-                    this.NavigationService.Navigate(new Game(new OthelloBoard(width, height, values)));
+                    //this.NavigationService.Navigate(new Game(new OthelloBoard(width, height, values)));
                 }
             }
         }

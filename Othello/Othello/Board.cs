@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace Othello
 {
-    class OthelloBoard
     {
         private int[] values;
         private int[] indices;
