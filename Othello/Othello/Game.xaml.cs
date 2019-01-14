@@ -22,8 +22,8 @@ namespace Othello
     /// </summary>
     public partial class Game : Page
     {
-        private const int BOARD_WIDTH = 9;
-        private const int BOARD_HEIGHT = 7;
+        private const int BOARD_WIDTH = 8;
+        private const int BOARD_HEIGHT = 8;
         private List<Rectangle> caseList = new List<Rectangle>();
         private int turn = 0;
         private Player p1;
@@ -67,8 +67,14 @@ namespace Othello
                 Board.RowDefinitions.Add(new RowDefinition());
                 if (i != 0)
                 {
-                    Label rowLabel = new Label();
-                    rowLabel.Content = $"{i}";
+                    Label rowLabel = new Label()
+                    {
+                        FontFamily = new FontFamily("Segoe UI Light"),
+                        FontSize = 32,
+                        VerticalContentAlignment = VerticalAlignment.Center,
+                        HorizontalContentAlignment = HorizontalAlignment.Center,
+                        Content = $"{i}",
+                    };
                     Grid.SetColumn(rowLabel, 0);
                     Grid.SetRow(rowLabel, i);
                     Board.Children.Add(rowLabel);
@@ -81,23 +87,32 @@ namespace Othello
                 Board.ColumnDefinitions.Add(new ColumnDefinition());
                 if (j != 0)
                 {
-                    Label columnLabel = new Label();
-                    int index = 'A' - 1 + j;
-                    columnLabel.Content = Encoding.ASCII.GetString(new byte[] { (byte)index });
+                    int index = '@' + j;
+                    Label columnLabel = new Label()
+                    {
+                        FontFamily = new FontFamily("Segoe UI Light"),
+                        FontSize = 32,
+                        VerticalContentAlignment = VerticalAlignment.Center,
+                        HorizontalContentAlignment = HorizontalAlignment.Center,
+                        Content = Encoding.ASCII.GetString(new byte[] { (byte)index }),
+
+                    };
                     Grid.SetRow(columnLabel, 0);
                     Grid.SetColumn(columnLabel, j);
                     Board.Children.Add(columnLabel);
                 }
             }
+            Board.RowDefinitions[0].Height = new GridLength(50);
+            Board.ColumnDefinitions[0].Width = new GridLength(50);
 
-            // Fill board with rectangle clickabley
+            // Fill board with clickable rectangle
             for (int y = 1; y <= row; y++)
             {
                 for (int x = 1; x <= column; x++)
                 {
-                    string name = $"c{x}{y}";
-                    Rectangle rect = new Rectangle() { Name = name, Fill = new SolidColorBrush(Colors.LightGreen) };
+                    Rectangle rect = new Rectangle() { DataContext = new Tuple<int, int>(x, y) };
                     rect.MouseLeftButtonDown += X_MouseDown;
+                    rect.MouseMove += X_MouseMove;
                     Grid.SetRow(rect, y);
                     Grid.SetColumn(rect, x);
                     Board.Children.Add(rect);
@@ -107,15 +122,18 @@ namespace Othello
             DisplayBoard();
         }
 
+        private void X_MouseMove(object sender, MouseEventArgs e)
+        {
+            //if(((Rectangle)sender). == nextFrameBlack)
+            //TODO
+        }
+
         private void X_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Console.Write("ALO");
             // Reaction au clic sur un rectangle
-            string elementName = (e.Source as FrameworkElement).Name; //This is bad
-            int gridX = Convert.ToInt32(elementName.Substring(1, 1)); // Works only for x and y < 10
-            int gridY = Convert.ToInt32(elementName.Substring(elementName.Length - 1, 1));
-            int boardX = gridX - 1;
-            int boardY = gridY - 1;
+            Tuple<int, int> coords = ((Tuple<int, int>)((Rectangle)sender).DataContext);
+            int boardX = coords.Item1 - 1;
+            int boardY = coords.Item2 - 1;
 
             if (IsPlayable(boardX, boardY))
             {
@@ -148,31 +166,31 @@ namespace Othello
             {
                 for (int x = 1; x <= board.Width; x++)
                 {
-                    string name = $"c{x}{y}";
-                    Rectangle r_base = caseList.Find(rec => rec.Name == name);
+                    Rectangle r_base = caseList.Find(rec => rec.DataContext.Equals(new Tuple<int, int>(x, y)));
                     r_base.Fill = new ImageBrush(emptyFrame);
 
 
                     if (board[ix(x - 1, y - 1)] == 1) //Blanc
                     {
-                        Rectangle r = caseList.Find(rec => rec.Name == name);
+                        Rectangle r = caseList.Find(rec => rec.DataContext.Equals(new Tuple<int, int>(x, y)));
                         r.Fill = new ImageBrush(p1.getImage());
                     }
                     else if (board[ix(x - 1, y - 1)] == -1) //Noir
                     {
-                        Rectangle r = caseList.Find(rec => rec.Name == name);
+                        Rectangle r = caseList.Find(rec => rec.DataContext.Equals(new Tuple<int, int>(x, y)));
                         r.Fill = new ImageBrush(p2.getImage());
                     }
                     else if (board[ix(x - 1, y - 1)] == 0)
                     {
                         if (IsPlayable(x - 1, y - 1))
                         {
-                            Rectangle r = caseList.Find(rec => rec.Name == name);
+                            Rectangle r = caseList.Find(rec => rec.DataContext.Equals(new Tuple<int, int>(x, y)));
                             r.Fill = new ImageBrush(turn % 2 == 0 ? nextFrameWhite : nextFrameBlack);
                         }
                     }
                 }
             }
+
         }
 
         private void Board_MouseDown(object sender, RoutedEventArgs e)
