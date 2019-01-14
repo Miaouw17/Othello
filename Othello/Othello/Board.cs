@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Othello
 {
-    class OthelloBoard /*: IPlayable.IPlayable*/
+    class OthelloBoard : IPlayable.IPlayable
     {
+        private String name;
         private int[] values;
         private int[] indices;
         private int width;
@@ -21,8 +22,9 @@ namespace Othello
         public int Height { get => height;}
 
         //enum CellState { BLACK=-1, WHITE=1, EMPTY=0};
-        public OthelloBoard(int width, int height)
+        public OthelloBoard(String name, int width, int height)
         {
+            this.name = name;
             this.height = height;
             this.width = width;
             values = new int[height * width];
@@ -265,11 +267,6 @@ namespace Othello
             return flips;
         }
 
-        private List<int> getFlippedIndicesFromListOfValues(List<int> listOfValues, int v, int index)
-        {
-            throw new NotImplementedException();
-        }
-
         private List<int> getListOfValuesFromListOfIndices(List<int> listOfIndices)
         {
             List<int> listOfValues = new List<int>();
@@ -280,7 +277,7 @@ namespace Othello
             return listOfValues;
         }
 
-        public void DisplayBoard()
+        public void DisplayBoardDebug()
         {
             for (int y = 0; y < Height; y++)
             {
@@ -329,6 +326,52 @@ namespace Othello
         {
             Console.Write(s);
             print(l);
+        }
+
+        public string GetName()
+        {
+            return this.name;
+        }
+
+        public bool IsPlayable(int x, int y, bool isWhite)
+        {
+            //TODO : This has to be optimized ! (Works for now)
+            return (values[ix(x, y)] == 0) && (this.getAllFlips(x, y, isWhite ? 1 : -1).Count() != 0);
+        }
+
+        public bool PlayMove(int column, int line, bool isWhite)
+        {
+            this.Play(column, line, isWhite ? 1 : -1);
+            return true; //TODO : Find out what this method should return ask olvier.husser@he-arc.ch
+        }
+
+        public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
+        {
+            //TODO
+            throw new NotImplementedException();
+        }
+
+        public int[,] GetBoard()
+        {
+            int[,] output = new int[height, width];
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    output[i, j] = values[i * width + j];
+                }
+            }
+            return output;
+        }
+
+        public int GetWhiteScore()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetBlackScore()
+        {
+            throw new NotImplementedException();
         }
     }
 }
