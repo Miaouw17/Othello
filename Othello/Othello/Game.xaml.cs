@@ -28,18 +28,20 @@ namespace Othello
         private bool isWhiteTurn = true;
         private Player p1;
         private Player p2;
-        private BitmapImage emptyFrame;
-        private BitmapImage nextFrameBlack;
-        private BitmapImage nextFrameWhite;
+        private static BitmapImage bmpEmpty = new BitmapImage(new Uri(@"frameempty.jpg", UriKind.Relative));
+        private static BitmapImage bmpNWhite = new BitmapImage(new Uri(@"framenextwhite.jpg", UriKind.Relative));
+        private static BitmapImage bmpNBlack = new BitmapImage(new Uri(@"framenextblack.jpg", UriKind.Relative));
+        private static Uri uriWhite = new Uri(@"framewhite.jpg", UriKind.Relative);
+        private static Uri uriBlack = new Uri(@"frameblack.jpg", UriKind.Relative);
         private OthelloBoard board;
+
+        private const string NAME_PLAYER_1 = "White";
+        private const string NAME_PLAYER_2 = "Black";
 
         public Game()
         {
-            p1 = new Player(0, "Trump", new BitmapImage(new Uri(@"framewhite.jpg", UriKind.Relative)));
-            p2 = new Player(1, "Hilary", new BitmapImage(new Uri(@"frameblack.jpg", UriKind.Relative)));
-            emptyFrame = new BitmapImage(new Uri(@"frameempty.jpg", UriKind.Relative));
-            nextFrameBlack = new BitmapImage(new Uri(@"framenextblack.jpg", UriKind.Relative));
-            nextFrameWhite = new BitmapImage(new Uri(@"framenextwhite.jpg", UriKind.Relative));
+            p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
+            p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
             board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT); //TODO : Change name dynamically, using save name !
             InitializeComponent();
             //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
@@ -50,11 +52,8 @@ namespace Othello
 
         public Game(int[] values)
         {
-            p1 = new Player(0, "Trump", new BitmapImage(new Uri(@"framewhite.jpg", UriKind.Relative)));
-            p2 = new Player(1, "Hilary", new BitmapImage(new Uri(@"frameblack.jpg", UriKind.Relative)));
-            emptyFrame = new BitmapImage(new Uri(@"frameempty.jpg", UriKind.Relative));
-            nextFrameBlack = new BitmapImage(new Uri(@"framenextblack.jpg", UriKind.Relative));
-            nextFrameWhite = new BitmapImage(new Uri(@"framenextwhite.jpg", UriKind.Relative));
+            p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
+            p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
             this.board = new OthelloBoard("Board",BOARD_WIDTH, BOARD_HEIGHT, values);
             InitializeComponent();
             //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
@@ -132,19 +131,21 @@ namespace Othello
             //TODO
         }
 
+        /// <summary>
+        /// Handles a click on a rectangle on the grid.
+        /// </summary>
+        /// <param name="sender">Rectangle object on which the click has happend on.</param>
+        /// <param name="e">Event args</param>
         private void X_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            // Reaction au clic sur un rectangle
-            
-            Tuple<int, int> coords = ((Tuple<int, int>)((Rectangle)sender).DataContext);
-            int boardX = coords.Item1 - 1;
-            int boardY = coords.Item2 - 1;
+            Tuple<int, int> coords = ((Tuple<int, int>)((Rectangle)sender).DataContext); //Extracting coords from Rectangle DataContext.
+            int boardX = coords.Item1 - 1; //GridX to BoardX
+            int boardY = coords.Item2 - 1; //GridY to BoardY
 
             if (board.IsPlayable(boardX, boardY, isWhiteTurn))
             {
                 board.PlayMove(boardX, boardY, isWhiteTurn);
-                //board.Play(boardX, boardY, isWhiteTurn ? 1 : -1);
-                isWhiteTurn ^= true; // Switch turn
+                isWhiteTurn ^= true; //Invert turn
             }
 
             DisplayBoard();
@@ -174,7 +175,7 @@ namespace Othello
                 for (int x = 1; x <= board.Width; x++)
                 {
                     Rectangle r_base = caseList.Find(rec => rec.DataContext.Equals(new Tuple<int, int>(x, y)));
-                    r_base.Fill = new ImageBrush(emptyFrame);
+                    r_base.Fill = new ImageBrush(bmpEmpty);
 
 
                     if (board[ix(x - 1, y - 1)] == 1) //Blanc
@@ -189,10 +190,11 @@ namespace Othello
                     }
                     else if (board[ix(x - 1, y - 1)] == 0)
                     {
-                        if (board.IsPlayable(x - 1, y - 1, isWhiteTurn))
+                        //if (board.IsPlayable(x - 1, y - 1, isWhiteTurn))
+                        if(board.NextPossibleMoves.Contains((y-1)*board.Width+(x-1)))
                         {
                             Rectangle r = caseList.Find(rec => rec.DataContext.Equals(new Tuple<int, int>(x, y)));
-                            r.Fill = new ImageBrush(isWhiteTurn ? nextFrameWhite : nextFrameBlack);
+                            r.Fill = new ImageBrush(isWhiteTurn ? bmpNWhite : bmpNBlack);
                         }
                     }
                 }

@@ -11,6 +11,7 @@ namespace Othello
         private String name;
         private int[] values;
         private int[] indices;
+        private List<int> nextPossibleMoves;
         private int width;
         private int height;
 
@@ -20,6 +21,7 @@ namespace Othello
         }
         public int Width { get => width;}
         public int Height { get => height;}
+        public List<int> NextPossibleMoves { get => nextPossibleMoves; set => nextPossibleMoves = value; }
 
         //enum CellState { BLACK=-1, WHITE=1, EMPTY=0};
         public OthelloBoard(String name, int width, int height)
@@ -27,6 +29,7 @@ namespace Othello
             this.name = name;
             this.height = height;
             this.width = width;
+            this.nextPossibleMoves = new List<int>();
             values = new int[height * width];
             indices = new int[height * width];
             for(int i = 0; i< height * width; i++)
@@ -41,6 +44,7 @@ namespace Othello
             this.name = name;
             this.height = height;
             this.width = width;
+            this.nextPossibleMoves = new List<int>();
             values = new int[height * width];
             indices = new int[height * width];
             for (int i = 0; i < height * width; i++)
@@ -66,6 +70,24 @@ namespace Othello
             values[ix(xMid, yMid-1)] = -1;
             values[ix(xMid-1, yMid)] = -1;
             values[ix(xMid, yMid)] = 1;
+            UpdateNextPossibleMoves(1); // 1 : White begins
+        }
+
+        private void UpdateNextPossibleMoves(int v)
+        {
+            NextPossibleMoves.Clear();
+            for (int i = 0; i < width * height; i++)
+            {
+                if(values[i]==0)
+                {
+                    if (getAllFlips(i % width, i / width, v).Count()>0) //TODO : improve
+                    {
+                        NextPossibleMoves.Add(i);
+                        Console.Write($" {i} ");
+                    }
+                }
+            }
+            Console.WriteLine();
         }
 
         /// <summary>
@@ -103,7 +125,7 @@ namespace Othello
             {
                 values[diskIndex] = v;
             }
-
+            UpdateNextPossibleMoves(v*-1); // Update the list of possible moves for next player (v*=-1)
         }
 
         private List<int> getPositiveDiagonalIndices(int x, int y)
