@@ -36,8 +36,9 @@ namespace Othello
             MakeInitialBoard();
         }
 
-        public OthelloBoard(int width, int height, int[] values)
+        public OthelloBoard(String name, int width, int height, int[] board)
         {
+            this.name = name;
             this.height = height;
             this.width = width;
             values = new int[height * width];
@@ -49,7 +50,7 @@ namespace Othello
 
             for (int i = 0; i < height * width; i++)
             {
-                this.values[i] = values[i];
+                this.values[i] = board[i];
             }
         }
 
@@ -366,12 +367,28 @@ namespace Othello
 
         public int GetWhiteScore()
         {
-            throw new NotImplementedException();
+            int score = 0;
+            foreach (var v in values)
+            {
+                if (v == 1)
+                {
+                    score++;
+                }
+            }
+            return score;
         }
 
         public int GetBlackScore()
         {
-            throw new NotImplementedException();
+            int score = 0;
+            foreach (var v in values)
+            {
+                if (v == -1)
+                {
+                    score++;
+                }
+            }
+            return score;
         }
     }
 }

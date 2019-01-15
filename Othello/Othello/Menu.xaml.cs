@@ -43,24 +43,23 @@ namespace Othello
             {
                 int height = 0;
                 int width = 0;
-                int[] values;
+                int[] board;
                 string filename = openFileDialog.FileName;
                 //Console.Write(File.ReadAllText(filename));
                 using (var reader = new StreamReader(filename))
                 {
                     int index = 0;
-                    height = File.ReadAllLines(filename).Count();                   
-                    var firstline = reader.ReadLine();
-                    var firstval = firstline.Split(',');
+                    height = File.ReadAllLines(filename).Count();
+                    var firstval = reader.ReadLine().Split(',');
                     width = firstval.Count();
-                    values = new int[height * width];
+                    board = new int[height * width];
 
                     // parce que le reader est deja a la fin de la premiere ligne
-                    foreach(var v in firstval)
+                    foreach (var v in firstval)
                     {
                         if (v != "")
                         {
-                            values[index] = Convert.ToInt32(v);
+                            board[index] = Convert.ToInt32(v);
                             index++;
                         }
                     }
@@ -68,28 +67,26 @@ namespace Othello
                     // débute à la 2eme ligne (moyen d'opti mais j'aimerais que ça marche avant)
                     while (!reader.EndOfStream)
                     {
-                        var line = reader.ReadLine();
-                        var val = line.Split(',');
-                        foreach(var v in val)
+                        foreach(var v in reader.ReadLine().Split(','))
                         {
                             if (v != "")
                             {
-                                values[index] = Convert.ToInt32(v);
+                                board[index] = Convert.ToInt32(v);
                                 index++;
                             }
                         }
                     }
                     Console.WriteLine(width);
                     Console.WriteLine(height-1);
-                    /*for (int i = 0; i <= index; i++)
+                    for (int i = 0; i < index; i++)
                     {
-                        Console.Write(values[i]);
-                        if(i % width == 0)
+                        Console.Write(board[i]);
+                        if((i+1) % width == 0)
                         {
                             Console.WriteLine();
                         }
-                    }*/
-                    //this.NavigationService.Navigate(new Game(new OthelloBoard(width, height, values)));
+                    }
+                   this.NavigationService.Navigate(new Game(board));
                 }
             }
         }

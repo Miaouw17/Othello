@@ -44,20 +44,24 @@ namespace Othello
             InitializeComponent();
             //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
+            ScoreJ1.Content = board.GetWhiteScore();
+            ScoreJ2.Content = board.GetBlackScore();
         }
 
-        /*public Game(OthelloBoard board)
+        public Game(int[] values)
         {
             p1 = new Player(0, "Trump", new BitmapImage(new Uri(@"framewhite.jpg", UriKind.Relative)));
             p2 = new Player(1, "Hilary", new BitmapImage(new Uri(@"frameblack.jpg", UriKind.Relative)));
             emptyFrame = new BitmapImage(new Uri(@"frameempty.jpg", UriKind.Relative));
             nextFrameBlack = new BitmapImage(new Uri(@"framenextblack.jpg", UriKind.Relative));
             nextFrameWhite = new BitmapImage(new Uri(@"framenextwhite.jpg", UriKind.Relative));
-            this.board = getBoardFromSave();
+            this.board = new OthelloBoard("Board",BOARD_WIDTH, BOARD_HEIGHT, values);
             InitializeComponent();
             //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
-        }*/
+            ScoreJ1.Content = board.GetWhiteScore();
+            ScoreJ2.Content = board.GetBlackScore();
+        }
 
         private void GridGeneration(int row, int column)
         {
@@ -145,6 +149,8 @@ namespace Othello
 
             DisplayBoard();
             UpdatePlayableCells();
+            ScoreJ1.Content = board.GetWhiteScore();
+            ScoreJ2.Content = board.GetBlackScore();
         }
 
         private void UpdatePlayableCells()
