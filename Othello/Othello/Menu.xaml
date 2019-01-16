@@ -5,12 +5,41 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Othello"
       mc:Ignorable="d" 
-      Height="Auto" Width="Auto"
-      Title="Menu" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-
-    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Label x:Name="Title" Content="Othello" HorizontalAlignment="Center" VerticalAlignment="Top"></Label>
-        <Button x:Name="NewGame" Content="Nouvelle Partie" VerticalAlignment="Center" HorizontalAlignment="Center" Click="NewGame_Click"></Button>
-        <Button x:Name="LoadGame" Content="Charger Partie" HorizontalAlignment="Center" VerticalAlignment="Center" Click="LoadGame_Click"></Button>
+      Height="Auto" 
+      Width="Auto"
+      Title="Menu" 
+      Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+    <StackPanel 
+        Orientation="Vertical" 
+        HorizontalAlignment="Center" 
+        VerticalAlignment="Center">
+        <Label
+            x:Name="Title" Content="Othello"
+            FontFamily="Segoe UI Light" FontSize="150"
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Top"></Label>
+        <Label
+            x:Name="Authors" Content="Quentin Michel - Damian Petroff"
+            FontFamily="Segoe UI Light" FontSize="20"
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Top"></Label>
+        <Button 
+            x:Name="NewGame" Content="New" 
+            FontFamily="Segoe UI Light" FontSize="36"
+            Width="200" Margin="0,62,0,2"
+            VerticalAlignment="Center" HorizontalAlignment="Center" 
+            Click="NewGame_Click"></Button>
+        <Button 
+            x:Name="LoadGame" Content="Load" 
+            FontFamily="Segoe UI Light" FontSize="36"
+            Width="200" Margin="0,2,0,2"
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            Click="LoadGame_Click"></Button>
+        <Button 
+            x:Name="ExitGame" Content="Exit" 
+            FontFamily="Segoe UI Light" FontSize="36"
+            Width="200" Margin="0,2,0,2"
+            HorizontalAlignment="Center" VerticalAlignment="Center" Click="ExitGame_Click"
+            ></Button>
     </StackPanel>
 </Page>

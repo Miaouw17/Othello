@@ -34,8 +34,8 @@ namespace Othello
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            frame.Width = ((Window)sender).Width;
-            frame.Height = ((Window)sender).Height;
+            frame.Width = this.Width;
+            frame.Height = this.Height;
         }
 
         private void frame_SizeChanged(object sender, SizeChangedEventArgs e)

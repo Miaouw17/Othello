@@ -90,5 +90,10 @@ namespace Othello
                 }
             }
         }
+
+        private void ExitGame_Click(object sender, RoutedEventArgs e)
+        {
+            Environment.Exit(0);
+        }
     }
 }

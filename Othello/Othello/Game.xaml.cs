@@ -43,8 +43,9 @@ namespace Othello
             p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
             p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
             board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT); //TODO : Change name dynamically, using save name !
+
             InitializeComponent();
-            //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
+
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
             ScoreJ1.Content = board.GetWhiteScore();
             ScoreJ2.Content = board.GetBlackScore();
@@ -55,8 +56,9 @@ namespace Othello
             p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
             p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
             this.board = new OthelloBoard("Board",BOARD_WIDTH, BOARD_HEIGHT, values);
+
             InitializeComponent();
-            //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
+      
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
             ScoreJ1.Content = board.GetWhiteScore();
             ScoreJ2.Content = board.GetBlackScore();
@@ -234,5 +236,34 @@ namespace Othello
             this.NavigationService.Navigate(new Menu());
         }
 
+        private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // Here you can resize every element of the page dependant of the mainwindow size
+
+            // Column proportion
+
+            //infoColumn.Width = new GridLength(.3f * Window.GetWindow(this).Width);
+            infoColumn.Width = new GridLength(400);
+            boardColumn.Width = new GridLength(Window.GetWindow(this).Width- 400);
+
+            int nRows = Board.RowDefinitions.Count;
+            int nCols = Board.ColumnDefinitions.Count;
+
+            double min = Math.Min(board_Border.ActualHeight / (nRows*1.2f), board_Border.ActualWidth / (nCols * 1.2f));
+
+            for (int i = 0; i < nCols; i++)
+            {
+                Board.ColumnDefinitions[i].Width = new GridLength(min, GridUnitType.Pixel);
+            }
+            for (int i = 0; i < nRows; i++)
+            {
+                Board.RowDefinitions[i].Height = new GridLength(min, GridUnitType.Pixel);
+            }
+
+            double w = (board_Border.ActualWidth - min * nCols) / 2;
+            double h = (board_Border.ActualHeight - min * nRows) / 2;
+
+            Board.Margin = new Thickness(w, h, w, h);
+        }
     }
 }
