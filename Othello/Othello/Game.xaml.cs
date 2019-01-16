@@ -14,6 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Diagnostics;
+using System.Timers;
 
 namespace Othello
 {
@@ -22,12 +24,22 @@ namespace Othello
     /// </summary>
     public partial class Game : Page
     {
-        private const int BOARD_WIDTH = 8;
-        private const int BOARD_HEIGHT = 8;
+        private const int BOARD_WIDTH = 9;
+        private const int BOARD_HEIGHT = 7;
         private List<Rectangle> caseList = new List<Rectangle>();
         private bool isWhiteTurn = true;
         private Player p1;
         private Player p2;
+
+        public int WhiteScore { get; set; }
+        public int BlackScore { get; set; }
+
+        private Stopwatch swWhitePlayer;
+        private Stopwatch swBlackPlayer;
+        private TimeSpan tsWhitePlayer;
+        private TimeSpan tsBlackPlayer;
+        private Timer timer;
+
         private static BitmapImage bmpEmpty = new BitmapImage(new Uri(@"frameempty.jpg", UriKind.Relative));
         private static BitmapImage bmpNWhite = new BitmapImage(new Uri(@"framenextwhite.jpg", UriKind.Relative));
         private static BitmapImage bmpNBlack = new BitmapImage(new Uri(@"framenextblack.jpg", UriKind.Relative));
@@ -40,6 +52,8 @@ namespace Othello
 
         public Game()
         {
+            this.DataContext = this;
+
             p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
             p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
             board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT); //TODO : Change name dynamically, using save name !
@@ -47,21 +61,45 @@ namespace Othello
             InitializeComponent();
 
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
-            ScoreJ1.Content = board.GetWhiteScore();
-            ScoreJ2.Content = board.GetBlackScore();
+
+            UpdateScore();
+
+            swWhitePlayer = new Stopwatch();
+            swBlackPlayer = new Stopwatch();
+            tsWhitePlayer = swWhitePlayer.Elapsed;
+            tsBlackPlayer = swBlackPlayer.Elapsed;
+            timer = new Timer();
+            timer.Interval = 0.1;
+            timer.Elapsed += Timer_Elapsed;
+            timer.Start();
         }
 
         public Game(int[] values)
         {
             p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
             p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
-            this.board = new OthelloBoard("Board",BOARD_WIDTH, BOARD_HEIGHT, values);
+            this.board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT, values);
 
             InitializeComponent();
-      
+
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
-            ScoreJ1.Content = board.GetWhiteScore();
-            ScoreJ2.Content = board.GetBlackScore();
+
+            UpdateScore();
+        }
+
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                Dispatcher.Invoke((Action)delegate ()
+                {
+                    UpdateTimers();
+                });
+            }
+            catch
+            {
+                // try catch to avoid crash on windows close
+            }
         }
 
         private void GridGeneration(int row, int column)
@@ -124,6 +162,7 @@ namespace Othello
                     caseList.Add(rect);
                 }
             }
+
             DisplayBoard();
         }
 
@@ -147,13 +186,41 @@ namespace Othello
             if (board.IsPlayable(boardX, boardY, isWhiteTurn))
             {
                 board.PlayMove(boardX, boardY, isWhiteTurn);
+
                 isWhiteTurn ^= true; //Invert turn
+
+                if (isWhiteTurn)
+                {
+                    swWhitePlayer.Start();
+                    swBlackPlayer.Stop();
+                }
+                else
+                {
+                    swWhitePlayer.Stop();
+                    swBlackPlayer.Start();
+                }
             }
 
             DisplayBoard();
             UpdatePlayableCells();
-            ScoreJ1.Content = board.GetWhiteScore();
-            ScoreJ2.Content = board.GetBlackScore();
+            UpdateScore();
+
+        }
+
+        private void UpdateScore()
+        {
+            WhiteScore = board.GetWhiteScore();
+            BlackScore = board.GetBlackScore();
+            ScoreJ1.GetBindingExpression(Label.ContentProperty).UpdateTarget();
+            ScoreJ2.GetBindingExpression(Label.ContentProperty).UpdateTarget();
+        }
+
+        private void UpdateTimers()
+        {
+            tsWhitePlayer = TimeSpan.FromMilliseconds(swWhitePlayer.ElapsedMilliseconds);
+            tsBlackPlayer = TimeSpan.FromMilliseconds(swBlackPlayer.ElapsedMilliseconds);
+            whiteTimer.Content = tsWhitePlayer.ToString(@"mm\:ss\.fff");
+            blackTimer.Content = tsBlackPlayer.ToString(@"mm\:ss\.fff");
         }
 
         private void UpdatePlayableCells()
@@ -243,8 +310,8 @@ namespace Othello
             // Column proportion
 
             //infoColumn.Width = new GridLength(.3f * Window.GetWindow(this).Width);
-            infoColumn.Width = new GridLength(400);
-            boardColumn.Width = new GridLength(Window.GetWindow(this).Width- 400);
+            infoColumn.Width = new GridLength(300);
+            boardColumn.Width = new GridLength(Window.GetWindow(this).Width- 300);
 
             int nRows = Board.RowDefinitions.Count;
             int nCols = Board.ColumnDefinitions.Count;

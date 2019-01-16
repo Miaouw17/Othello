@@ -10,7 +10,7 @@
         Width="800"
         SizeChanged="Window_SizeChanged" 
         MinHeight="600" 
-        MinWidth="800">
+        MinWidth="1000">
     <Frame 
         x:Name="frame"
         NavigationUIVisibility="Hidden" 
