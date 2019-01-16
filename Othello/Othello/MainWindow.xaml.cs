@@ -24,7 +24,6 @@ namespace Othello
         {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
-            //EventHandler += 
         }
        
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -34,13 +33,8 @@ namespace Othello
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            frame.Width = this.Width;
-            frame.Height = this.Height;
-        }
-
-        private void frame_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            
+            frame.Width = this.ActualWidth;
+            frame.Height = this.ActualHeight;
         }
     }
 
