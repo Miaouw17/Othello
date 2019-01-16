@@ -32,13 +32,19 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
-            <Label x:Name="LabelJ1" Grid.Column="0" Grid.Row="0" Content="White score : "/>
-            <Label x:Name="ScoreJ1" Grid.Column="1" Grid.Row="0" Content="ScoreJ1" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-            <Label x:Name="LabelJ2" Grid.Column="0" Grid.Row="1" Content="Black score : "/>
-            <Label x:Name="ScoreJ2" Grid.Column="1" Grid.Row="1" Content="ScoreJ2" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-            <Button x:Name="buttonSave" Grid.Column="0" Grid.Row="2" Content="Sauvegarder" Width="75" Click="SaveGame_Click"/>
-            <Button x:Name="buttonBack" Grid.Column="1" Grid.Row="2" Content="Retour" Click="BackMenu_Click"/>
+            <Label Grid.Column="0" Grid.Row="0" Content="White Player timer : "/>
+            <Label x:Name="TimerWhitePlayer" Grid.Column="1" Grid.Row="0" Content="TimerWhite"/>
+            <Label Grid.Column="0" Grid.Row="1" Content="Black Player timer : "/>
+            <Label x:Name="TimerBlackPlayer" Grid.Column="1" Grid.Row="1" Content="TimerBlack"/>
+            <Label x:Name="LabelJ1" Grid.Column="0" Grid.Row="2" Content="White score : "/>
+            <Label x:Name="ScoreJ1" Grid.Column="1" Grid.Row="3" Content="ScoreJ1 : " HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Label x:Name="LabelJ2" Grid.Column="0" Grid.Row="3" Content="Black score : "/>
+            <Label x:Name="ScoreJ2" Grid.Column="1" Grid.Row="3" Content="ScoreJ2 : " HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Button x:Name="buttonSave" Grid.Column="0" Grid.Row="4" Content="Sauvegarder" Width="75" Click="SaveGame_Click"/>
+            <Button x:Name="buttonBack" Grid.Column="1" Grid.Row="4" Content="Retour" Click="BackMenu_Click"/>
         </Grid>
     </Grid>
 </Page>

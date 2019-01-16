@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Diagnostics;
 
 namespace Othello
 {
@@ -28,6 +29,12 @@ namespace Othello
         private bool isWhiteTurn = true;
         private Player p1;
         private Player p2;
+
+        private Stopwatch swWhitePlayer;
+        private Stopwatch swBlackPlayer;
+        private TimeSpan tsWhitePlayer;
+        private TimeSpan tsBlackPlayer;
+
         private static BitmapImage bmpEmpty = new BitmapImage(new Uri(@"frameempty.jpg", UriKind.Relative));
         private static BitmapImage bmpNWhite = new BitmapImage(new Uri(@"framenextwhite.jpg", UriKind.Relative));
         private static BitmapImage bmpNBlack = new BitmapImage(new Uri(@"framenextblack.jpg", UriKind.Relative));
@@ -47,21 +54,26 @@ namespace Othello
             InitializeComponent();
 
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
-            ScoreJ1.Content = board.GetWhiteScore();
-            ScoreJ2.Content = board.GetBlackScore();
+
+            UpdateScore();
+
+            swWhitePlayer = new Stopwatch();
+            swBlackPlayer = new Stopwatch();
+            tsWhitePlayer = swWhitePlayer.Elapsed;
+            tsBlackPlayer = swBlackPlayer.Elapsed;
         }
 
         public Game(int[] values)
         {
             p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
             p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
-            this.board = new OthelloBoard("Board",BOARD_WIDTH, BOARD_HEIGHT, values);
+            this.board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT, values);
 
             InitializeComponent();
-      
+
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
-            ScoreJ1.Content = board.GetWhiteScore();
-            ScoreJ2.Content = board.GetBlackScore();
+
+            UpdateScore();
         }
 
         private void GridGeneration(int row, int column)
@@ -124,6 +136,7 @@ namespace Othello
                     caseList.Add(rect);
                 }
             }
+
             DisplayBoard();
         }
 
@@ -147,13 +160,36 @@ namespace Othello
             if (board.IsPlayable(boardX, boardY, isWhiteTurn))
             {
                 board.PlayMove(boardX, boardY, isWhiteTurn);
+
                 isWhiteTurn ^= true; //Invert turn
+
+                if (isWhiteTurn)
+                {
+                    swWhitePlayer.Start();
+                    swBlackPlayer.Stop();
+                }
+                else
+                {
+                    swWhitePlayer.Stop();
+                    swBlackPlayer.Start();
+                }
             }
 
             DisplayBoard();
             UpdatePlayableCells();
+            UpdateScore();
+
+        }
+
+        private void UpdateScore()
+        {
             ScoreJ1.Content = board.GetWhiteScore();
             ScoreJ2.Content = board.GetBlackScore();
+        }
+
+        private void UpdateTimers()
+        {
+            //TimerBlackPlayer.Content = 
         }
 
         private void UpdatePlayableCells()
