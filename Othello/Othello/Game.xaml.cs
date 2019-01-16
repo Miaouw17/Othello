@@ -238,7 +238,9 @@ namespace Othello
 
         private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            //Console.WriteLine(Window.GetWindow(this).Width);
+            // Here you can resize every element of the page dependant of the mainwindow size
+
+            // Column proportion
             boardColumn.Width = new GridLength(0.7 * Window.GetWindow(this).Width);
             infoColumn.Width = new GridLength(0.3 * Window.GetWindow(this).Width);
         }
