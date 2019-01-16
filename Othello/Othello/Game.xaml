@@ -3,7 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Othello" mc:Ignorable="d" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="Auto" Width="Auto" Title="Game" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" SizeChanged="Page_SizeChanged">
-    <Grid x:Name="mainGrid">
+    <Grid x:Name="mainGrid" ShowGridLines="False">
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="boardColumn"/>
             <ColumnDefinition x:Name="infoColumn"/>
@@ -12,7 +12,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Border x:Name ="board_Border" 
-                Grid.Column="0" Grid.Row="0" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="0" Margin="5">
+                Grid.Column="0" Grid.Row="0" MinWidth="750"  Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="0" Margin="5">
             <Grid x:Name="Board" ShowGridLines="False" Button.Click="Board_MouseDown" VerticalAlignment="Top">
                 <Grid.ColumnDefinitions>
                 </Grid.ColumnDefinitions>
@@ -20,17 +20,22 @@
                 </Grid.RowDefinitions>
             </Grid>
         </Border>
-        <Grid x:Name="infoGrid" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">
+        <Rectangle 
+            Grid.Column="1" Grid.Row="0" 
+            StrokeThickness="2"
+            Stroke="DarkGray"
+            Fill="LightGray" />
+        <Grid x:Name="infoGrid" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" ShowGridLines="False">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="140"/>
+                <ColumnDefinition Width="140"/>
+                <ColumnDefinition Width="20" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="60"/>
                 <RowDefinition Height="60"/>
                 <RowDefinition Height="60"/>
-                <RowDefinition Height="60"/>
+                <RowDefinition Height="120"/>
                 <RowDefinition Height="120"/>
                 <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
@@ -61,19 +66,25 @@
                    Grid.Row="2" Grid.Column="1" 
                    FontFamily="Segoe UI Light" FontSize="30"
                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <!-- TURN LABEL-->
+            <Label x:Name="lblTurn" Content="It's White's turn !"
+                   Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                   FontFamily="Segoe UI" FontSize="20" Margin="0,40,0,0"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
             
             <!-- BUTTONS-->
             <Button x:Name="buttonSave" Content="Save" 
                    FontFamily="Segoe UI Light" FontSize="30"
-                   Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" 
+                   Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" 
                     Width ="200"
                    Click="SaveGame_Click" 
-                   HorizontalAlignment="Stretch" Margin="20,62,50,2"/>
+                   HorizontalAlignment="Stretch" Margin="20,62,20,2"/>
             <Button x:Name="buttonBack" Content="Back"
                    FontFamily="Segoe UI Light" FontSize="30"
-                   Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="3" 
+                   Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" 
                    Click="BackMenu_Click" 
-                   Width ="200" HorizontalAlignment="Center" Margin="20,2,50,2"/>
+                   Width ="200" HorizontalAlignment="Center" Margin="20,2,20,2"/>
         </Grid>
     </Grid>
 </Page>

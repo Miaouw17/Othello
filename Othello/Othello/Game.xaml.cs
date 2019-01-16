@@ -28,6 +28,8 @@ namespace Othello
         private const int BOARD_HEIGHT = 7;
         private List<Rectangle> caseList = new List<Rectangle>();
         private bool isWhiteTurn = true;
+        private bool whiteBlocked = false;
+        private bool blackBlocked = false;
         private Player p1;
         private Player p2;
 
@@ -107,8 +109,8 @@ namespace Othello
             // CreateRow
             for (int i = 0; i <= row; i++)
             {
-                Board.RowDefinitions.Add(new RowDefinition());
-                if (i != 0)
+                Board.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(65) });
+                if (i > 0)
                 {
                     Label rowLabel = new Label()
                     {
@@ -127,8 +129,8 @@ namespace Othello
             // CreateColumn
             for (int j = 0; j <= column; j++)
             {
-                Board.ColumnDefinitions.Add(new ColumnDefinition());
-                if (j != 0)
+                Board.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(65) });
+                if (j > 0)
                 {
                     int index = '@' + j;
                     Label columnLabel = new Label()
@@ -145,9 +147,8 @@ namespace Othello
                     Board.Children.Add(columnLabel);
                 }
             }
-            Board.RowDefinitions[0].Height = new GridLength(50);
-            Board.ColumnDefinitions[0].Width = new GridLength(50);
-
+            Board.RowDefinitions[0].Height = new GridLength(20);
+            Board.ColumnDefinitions[0].Width = new GridLength(20);
             // Fill board with clickable rectangle
             for (int y = 1; y <= row; y++)
             {
@@ -186,9 +187,9 @@ namespace Othello
             if (board.IsPlayable(boardX, boardY, isWhiteTurn))
             {
                 board.PlayMove(boardX, boardY, isWhiteTurn);
-
-                isWhiteTurn ^= true; //Invert turn
-
+                UpdateTurn();
+                board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
+                DisplayBoard();
                 if (isWhiteTurn)
                 {
                     swWhitePlayer.Start();
@@ -201,10 +202,64 @@ namespace Othello
                 }
             }
 
-            DisplayBoard();
             UpdatePlayableCells();
             UpdateScore();
 
+            Console.WriteLine($"whiteblocked:{whiteBlocked}, blackblocked:{blackBlocked}");
+
+            if (whiteBlocked ^ blackBlocked)
+            {
+                string turn = isWhiteTurn ? "White" : "Black";
+                string notTurn = isWhiteTurn ? "Black" : "White";
+                MessageBox.Show($"No possible move for {notTurn} !\n{turn} can keep playing.");
+            }
+            if (whiteBlocked && blackBlocked || !board.Values.ToList().Contains(0))
+            {
+                //End of game !
+                int sWhite = Convert.ToInt32(ScoreJ1.Content);
+                int sBlack = Convert.ToInt32(ScoreJ2.Content);
+                if (sWhite != sBlack)
+                {
+                    string winner = "";
+                    winner = sWhite > sBlack ? "White" : "Black";
+                    MessageBox.Show($"End of the game !\n{winner} wins !!!");
+                }
+                else
+                {
+                    MessageBox.Show("Tie game !");
+                }
+            }
+
+        }
+
+        private void UpdateTurn()
+        {
+            if (board.NextPossibleMoves.Count() == 0)
+            {
+                string turn = isWhiteTurn ? "White" : "Black";
+                string notTurn = isWhiteTurn ? "Black" : "White";
+                if (isWhiteTurn)
+                {
+                    blackBlocked = true;
+                }
+                else
+                {
+                    whiteBlocked = true;
+                }
+            }
+            if (board.NextPossibleMoves.Count() > 0)
+            {
+                if (isWhiteTurn)
+                {
+                    blackBlocked = false;
+                }
+                else
+                {
+                    whiteBlocked = false;
+                }
+                isWhiteTurn ^= true; //Invert turn
+            }
+            lblTurn.Content = isWhiteTurn ? "It's White's turn !" : "It's Black's turn !";
         }
 
         private void UpdateScore()
@@ -225,6 +280,7 @@ namespace Othello
 
         private void UpdatePlayableCells()
         {
+            //Not used yet
             for (int y = 0; y < board.Height; y++)
             {
                 for (int x = 0; x < board.Width; x++)
@@ -259,7 +315,6 @@ namespace Othello
                     }
                     else if (board[ix(x - 1, y - 1)] == 0)
                     {
-                        //if (board.IsPlayable(x - 1, y - 1, isWhiteTurn))
                         if(board.NextPossibleMoves.Contains((y-1)*board.Width+(x-1)))
                         {
                             Rectangle r = caseList.Find(rec => rec.DataContext.Equals(new Tuple<int, int>(x, y)));
@@ -306,31 +361,36 @@ namespace Othello
         private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             // Here you can resize every element of the page dependant of the mainwindow size
-
             // Column proportion
-
+            
             //infoColumn.Width = new GridLength(.3f * Window.GetWindow(this).Width);
             infoColumn.Width = new GridLength(300);
             boardColumn.Width = new GridLength(Window.GetWindow(this).Width- 300);
 
+
             int nRows = Board.RowDefinitions.Count;
             int nCols = Board.ColumnDefinitions.Count;
 
-            double min = Math.Min(board_Border.ActualHeight / (nRows*1.2f), board_Border.ActualWidth / (nCols * 1.2f));
+            double min = Math.Min(board_Border.ActualHeight / (nRows+1), board_Border.ActualWidth / (nCols+1));
 
-            for (int i = 0; i < nCols; i++)
+            GridLength gl = new GridLength((int)min, GridUnitType.Pixel);
+            Board.ColumnDefinitions[0].Width = new GridLength(50);
+            Board.RowDefinitions[0].Height = new GridLength(50);
+            for (int i = 1; i < nCols; i++)
             {
-                Board.ColumnDefinitions[i].Width = new GridLength(min, GridUnitType.Pixel);
+                Board.ColumnDefinitions[i].Width = gl;
             }
-            for (int i = 0; i < nRows; i++)
+            for (int i = 1; i < nRows; i++)
             {
-                Board.RowDefinitions[i].Height = new GridLength(min, GridUnitType.Pixel);
+                Board.RowDefinitions[i].Height = gl;
             }
 
             double w = (board_Border.ActualWidth - min * nCols) / 2;
             double h = (board_Border.ActualHeight - min * nRows) / 2;
 
-            Board.Margin = new Thickness(w, h, w, h);
+            Board.Margin = new Thickness(w, h-25, w, h);
         }
+
+        
     }
 }

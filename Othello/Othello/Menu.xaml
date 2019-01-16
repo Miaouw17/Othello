@@ -14,7 +14,7 @@
         HorizontalAlignment="Center" 
         VerticalAlignment="Center">
         <Label
-            x:Name="Title" Content="Othello"
+            x:Name="Title" Content="Othello.cs"
             FontFamily="Segoe UI Light" FontSize="150"
             HorizontalAlignment="Center" 
             VerticalAlignment="Top"></Label>

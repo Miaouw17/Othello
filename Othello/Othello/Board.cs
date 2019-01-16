@@ -16,12 +16,13 @@ namespace Othello
         private int height;
 
         public int this[int i] {
-            get => values[i];
-            set => values[i] = value;
+            get => Values[i];
+            set => Values[i] = value;
         }
         public int Width { get => width;}
         public int Height { get => height;}
         public List<int> NextPossibleMoves { get => nextPossibleMoves; set => nextPossibleMoves = value; }
+        public int[] Values { get => values; set => values = value; }
 
         //enum CellState { BLACK=-1, WHITE=1, EMPTY=0};
         public OthelloBoard(String name, int width, int height)
@@ -30,7 +31,7 @@ namespace Othello
             this.height = height;
             this.width = width;
             this.nextPossibleMoves = new List<int>();
-            values = new int[height * width];
+            Values = new int[height * width];
             indices = new int[height * width];
             for(int i = 0; i< height * width; i++)
             {
@@ -45,7 +46,7 @@ namespace Othello
             this.height = height;
             this.width = width;
             this.nextPossibleMoves = new List<int>();
-            values = new int[height * width];
+            Values = new int[height * width];
             indices = new int[height * width];
             for (int i = 0; i < height * width; i++)
             {
@@ -54,7 +55,7 @@ namespace Othello
 
             for (int i = 0; i < height * width; i++)
             {
-                this.values[i] = board[i];
+                this.Values[i] = board[i];
             }
         }
 
@@ -62,23 +63,23 @@ namespace Othello
         {
             for (var i = 0; i < width * height; i++)
             {
-                values[i] = 0;
+                Values[i] = 0;
             }
             int yMid = height >> 1;
             int xMid = width >> 1;
-            values[ix(xMid-1, yMid-1)] = 1;
-            values[ix(xMid, yMid-1)] = -1;
-            values[ix(xMid-1, yMid)] = -1;
-            values[ix(xMid, yMid)] = 1;
+            Values[ix(xMid-1, yMid-1)] = 1;
+            Values[ix(xMid, yMid-1)] = -1;
+            Values[ix(xMid-1, yMid)] = -1;
+            Values[ix(xMid, yMid)] = 1;
             UpdateNextPossibleMoves(1); // 1 : White begins
         }
 
-        private void UpdateNextPossibleMoves(int v)
+        public void UpdateNextPossibleMoves(int v)
         {
             NextPossibleMoves.Clear();
             for (int i = 0; i < width * height; i++)
             {
-                if(values[i]==0)
+                if(Values[i]==0)
                 {
                     if (getAllFlips(i % width, i / width, v).Count()>0) //TODO : improve
                     {
@@ -106,7 +107,7 @@ namespace Othello
              * To do so we need to save every indices that are in same lines (vertical and horizontal)
              * and diagonals (positive and negative) as the current cell (x,y).
              */
-            values[index] = v;
+            Values[index] = v;
             
 
             /* Now that all indices are saved, we need to define which disk will be flipped.
@@ -123,7 +124,7 @@ namespace Othello
             List<int> listOfFlippedDisksIndices = getAllFlips(x, y, v);
             foreach(int diskIndex in listOfFlippedDisksIndices)
             {
-                values[diskIndex] = v;
+                Values[diskIndex] = v;
             }
             UpdateNextPossibleMoves(v*-1); // Update the list of possible moves for next player (v*=-1)
         }
@@ -295,7 +296,7 @@ namespace Othello
             List<int> listOfValues = new List<int>();
             foreach(int index in listOfIndices)
             {
-                listOfValues.Add(values[index]);
+                listOfValues.Add(Values[index]);
             }
             return listOfValues;
         }
@@ -306,7 +307,7 @@ namespace Othello
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    Console.Write($"{values[ix(x, y)]}");
+                    Console.Write($"{Values[ix(x, y)]}");
                 }
                 Console.Write(Environment.NewLine + Environment.NewLine);
             }
@@ -320,7 +321,7 @@ namespace Othello
             {
                 for (int x = 0; x < width; x++)
                 {
-                    debug.Append($"{values[ix(x, y)]}");
+                    debug.Append($"{Values[ix(x, y)]}");
                     if(x < width-1)
                     {
                         debug.Append(",");
@@ -359,7 +360,7 @@ namespace Othello
         public bool IsPlayable(int x, int y, bool isWhite)
         {
             //TODO : This has to be optimized ! (Works for now)
-            return (values[ix(x, y)] == 0) && (this.getAllFlips(x, y, isWhite ? 1 : -1).Count() != 0);
+            return (Values[ix(x, y)] == 0) && (this.getAllFlips(x, y, isWhite ? 1 : -1).Count() != 0);
         }
 
         public bool PlayMove(int column, int line, bool isWhite)
@@ -381,7 +382,7 @@ namespace Othello
             {
                 for (int j = 0; j < width; j++)
                 {
-                    output[i, j] = values[i * width + j];
+                    output[i, j] = Values[i * width + j];
                 }
             }
             return output;
@@ -390,7 +391,7 @@ namespace Othello
         public int GetWhiteScore()
         {
             int score = 0;
-            foreach (var v in values)
+            foreach (var v in Values)
             {
                 if (v == 1)
                 {
@@ -403,7 +404,7 @@ namespace Othello
         public int GetBlackScore()
         {
             int score = 0;
-            foreach (var v in values)
+            foreach (var v in Values)
             {
                 if (v == -1)
                 {
