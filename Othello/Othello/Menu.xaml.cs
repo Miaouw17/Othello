@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -36,12 +38,12 @@ namespace Othello
         {
             // Readfile and load a game
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Text file|*.txt|Csv file|*.csv";
+            openFileDialog.Filter = "Binary file|*.bin";
             openFileDialog.Title = "Load your game";
 
             if(openFileDialog.ShowDialog() == true)
             {
-                int height = 0;
+                /*int height = 0;
                 int width = 0;
                 int[] board;
                 string filename = openFileDialog.FileName;
@@ -87,7 +89,12 @@ namespace Othello
                         }
                     }
                    this.NavigationService.Navigate(new Game(board));
-                }
+                }*/
+                IFormatter formatter = new BinaryFormatter();
+                Stream stream = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                Save save = (Save)formatter.Deserialize(stream);
+                stream.Close();
+                this.NavigationService.Navigate(new Game(save.values, save.isWhiteTurn, save.tsWhitePlayer, save.tsBlackPlayer));
             }
         }
 

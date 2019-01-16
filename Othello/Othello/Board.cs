@@ -40,7 +40,7 @@ namespace Othello
             MakeInitialBoard();
         }
 
-        public OthelloBoard(String name, int width, int height, int[] board)
+        public OthelloBoard(String name, int width, int height, int[] board, bool isWhiteTurn)
         {
             this.name = name;
             this.height = height;
@@ -57,6 +57,8 @@ namespace Othello
             {
                 this.Values[i] = board[i];
             }
+
+            UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
         }
 
         private void MakeInitialBoard()
@@ -332,6 +334,12 @@ namespace Othello
             Console.WriteLine(debug.ToString());
             return debug.ToString();
         }
+
+        public int[] GetValues()
+        {
+            return values;
+        }
+
         private int ix(int x, int y)
         {
             return x + y * width;

@@ -13,6 +13,7 @@
         </Grid.RowDefinitions>
         <Border x:Name ="board_Border" 
                 Grid.Column="0" Grid.Row="0" MinWidth="750"  Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="0" Margin="5">
+
             <Grid x:Name="Board" ShowGridLines="False" Button.Click="Board_MouseDown" VerticalAlignment="Top">
                 <Grid.ColumnDefinitions>
                 </Grid.ColumnDefinitions>
