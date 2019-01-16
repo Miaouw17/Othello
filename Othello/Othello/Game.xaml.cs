@@ -30,6 +30,9 @@ namespace Othello
         private Player p1;
         private Player p2;
 
+        public int WhiteScore { get; set; }
+        public int BlackScore { get; set; }
+
         private Stopwatch swWhitePlayer;
         private Stopwatch swBlackPlayer;
         private TimeSpan tsWhitePlayer;
@@ -47,6 +50,8 @@ namespace Othello
 
         public Game()
         {
+            this.DataContext = this;
+
             p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
             p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
             board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT); //TODO : Change name dynamically, using save name !
@@ -183,8 +188,10 @@ namespace Othello
 
         private void UpdateScore()
         {
-            ScoreJ1.Content = board.GetWhiteScore();
-            ScoreJ2.Content = board.GetBlackScore();
+            WhiteScore = board.GetWhiteScore();
+            BlackScore = board.GetBlackScore();
+            ScoreJ1.GetBindingExpression(Label.ContentProperty).UpdateTarget();
+            ScoreJ2.GetBindingExpression(Label.ContentProperty).UpdateTarget();
         }
 
         private void UpdateTimers()

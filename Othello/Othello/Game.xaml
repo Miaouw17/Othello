@@ -15,7 +15,7 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Border x:Name ="board_Border" Grid.Column="0" Grid.Row="0" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="0" Margin="5"> 
+        <Border x:Name ="board_Border" Grid.Column="0" Grid.Row="0" BorderBrush="Black" BorderThickness="0"> 
             <Grid x:Name="Board" ShowGridLines="False" Button.Click="Board_MouseDown">
                 <Grid.ColumnDefinitions>
                 </Grid.ColumnDefinitions>
@@ -40,9 +40,9 @@
             <Label Grid.Column="0" Grid.Row="1" Content="Black Player timer : "/>
             <Label x:Name="TimerBlackPlayer" Grid.Column="1" Grid.Row="1" Content="TimerBlack"/>
             <Label x:Name="LabelJ1" Grid.Column="0" Grid.Row="2" Content="White score : "/>
-            <Label x:Name="ScoreJ1" Grid.Column="1" Grid.Row="3" Content="ScoreJ1 : " HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Label x:Name="ScoreJ1" Grid.Column="1" Grid.Row="2" Content="{Binding WhiteScore}" HorizontalAlignment="Center" VerticalAlignment="Top"/>
             <Label x:Name="LabelJ2" Grid.Column="0" Grid.Row="3" Content="Black score : "/>
-            <Label x:Name="ScoreJ2" Grid.Column="1" Grid.Row="3" Content="ScoreJ2 : " HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Label x:Name="ScoreJ2" Grid.Column="1" Grid.Row="3" Content="{Binding BlackScore}" HorizontalAlignment="Center" VerticalAlignment="Top"/>
             <Button x:Name="buttonSave" Grid.Column="0" Grid.Row="4" Content="Sauvegarder" Width="75" Click="SaveGame_Click"/>
             <Button x:Name="buttonBack" Grid.Column="1" Grid.Row="4" Content="Retour" Click="BackMenu_Click"/>
         </Grid>
