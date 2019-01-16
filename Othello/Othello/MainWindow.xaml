@@ -6,5 +6,13 @@
         xmlns:local="clr-namespace:Othello"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="800" SizeChanged="Window_SizeChanged" MinHeight="600" MinWidth="800">
-    <Frame x:Name="frame" NavigationUIVisibility="Hidden"/>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Frame Grid.Row="0" Grid.Column="0" x:Name="frame" NavigationUIVisibility="Hidden"/>
+    </Grid>
 </Window>
