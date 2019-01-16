@@ -243,6 +243,22 @@ namespace Othello
             // Column proportion
             boardColumn.Width = new GridLength(0.7 * Window.GetWindow(this).Width);
             infoColumn.Width = new GridLength(0.3 * Window.GetWindow(this).Width);
+
+            int row = Board.RowDefinitions.Count;
+            int col = Board.ColumnDefinitions.Count;
+
+            double min = Math.Min(board_Border.ActualHeight / row, board_Border.ActualWidth / col);
+
+            for (int i = 0; i < col; i++)
+                Board.ColumnDefinitions[i].Width = new GridLength(min, GridUnitType.Pixel);
+
+            for (int i = 0; i < row; i++)
+                Board.RowDefinitions[i].Height = new GridLength(min, GridUnitType.Pixel);
+
+            double w = (board_Border.ActualWidth - min * col) / 2;
+            double h = (board_Border.ActualHeight - min * row) / 2;
+
+            Board.Margin = new Thickness(w, h, w, h);
         }
     }
 }
