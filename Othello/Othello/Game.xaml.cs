@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
+using System.Timers;
 
 namespace Othello
 {
@@ -37,6 +38,7 @@ namespace Othello
         private Stopwatch swBlackPlayer;
         private TimeSpan tsWhitePlayer;
         private TimeSpan tsBlackPlayer;
+        private Timer timer;
 
         private static BitmapImage bmpEmpty = new BitmapImage(new Uri(@"frameempty.jpg", UriKind.Relative));
         private static BitmapImage bmpNWhite = new BitmapImage(new Uri(@"framenextwhite.jpg", UriKind.Relative));
@@ -66,6 +68,10 @@ namespace Othello
             swBlackPlayer = new Stopwatch();
             tsWhitePlayer = swWhitePlayer.Elapsed;
             tsBlackPlayer = swBlackPlayer.Elapsed;
+            timer = new Timer();
+            timer.Interval = 0.1;
+            timer.Elapsed += Timer_Elapsed;
+            timer.Start();
         }
 
         public Game(int[] values)
@@ -79,6 +85,21 @@ namespace Othello
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
 
             UpdateScore();
+        }
+
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                Dispatcher.Invoke((Action)delegate ()
+                {
+                    UpdateTimers();
+                });
+            }
+            catch
+            {
+                // try catch to avoid crash on windows close
+            }
         }
 
         private void GridGeneration(int row, int column)
@@ -196,7 +217,10 @@ namespace Othello
 
         private void UpdateTimers()
         {
-            //TimerBlackPlayer.Content = 
+            tsWhitePlayer = TimeSpan.FromMilliseconds(swWhitePlayer.ElapsedMilliseconds);
+            tsBlackPlayer = TimeSpan.FromMilliseconds(swBlackPlayer.ElapsedMilliseconds);
+            TimerBlackPlayer.Content = tsWhitePlayer.ToString(@"mm\:ss\.fff");
+            TimerWhitePlayer.Content = tsBlackPlayer.ToString(@"mm\:ss\.fff");
         }
 
         private void UpdatePlayableCells()
