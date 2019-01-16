@@ -16,6 +16,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Timers;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Othello
 {
@@ -37,7 +39,9 @@ namespace Othello
         private Stopwatch swWhitePlayer;
         private Stopwatch swBlackPlayer;
         private TimeSpan tsWhitePlayer;
+        private long timeSaveWhite=0;
         private TimeSpan tsBlackPlayer;
+        private long timeSaveBlack=0;
         private Timer timer;
 
         private static BitmapImage bmpEmpty = new BitmapImage(new Uri(@"frameempty.jpg", UriKind.Relative));
@@ -56,7 +60,7 @@ namespace Othello
 
             p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
             p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
-            board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT); //TODO : Change name dynamically, using save name !
+            this.board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT); //TODO : Change name dynamically, using save name !
 
             InitializeComponent();
 
@@ -64,6 +68,32 @@ namespace Othello
 
             UpdateScore();
 
+            initTimer();
+        }
+
+        public Game(int[] values, bool isWhiteTurn, long timeSaveWhite, long timeSaveBlack)
+        {
+            this.DataContext = this;
+
+            p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
+            p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
+            this.board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT, values, isWhiteTurn);
+
+            this.isWhiteTurn = isWhiteTurn;
+            this.timeSaveWhite = timeSaveWhite;
+            this.timeSaveBlack = timeSaveBlack;
+
+            InitializeComponent();
+
+            GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
+
+            UpdateScore();
+
+            initTimer();
+        }
+
+        private void initTimer()
+        {
             swWhitePlayer = new Stopwatch();
             swBlackPlayer = new Stopwatch();
             tsWhitePlayer = swWhitePlayer.Elapsed;
@@ -72,19 +102,6 @@ namespace Othello
             timer.Interval = 0.1;
             timer.Elapsed += Timer_Elapsed;
             timer.Start();
-        }
-
-        public Game(int[] values)
-        {
-            p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
-            p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
-            this.board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT, values);
-
-            InitializeComponent();
-
-            GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
-
-            UpdateScore();
         }
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
@@ -204,7 +221,6 @@ namespace Othello
             DisplayBoard();
             UpdatePlayableCells();
             UpdateScore();
-
         }
 
         private void UpdateScore()
@@ -217,8 +233,8 @@ namespace Othello
 
         private void UpdateTimers()
         {
-            tsWhitePlayer = TimeSpan.FromMilliseconds(swWhitePlayer.ElapsedMilliseconds);
-            tsBlackPlayer = TimeSpan.FromMilliseconds(swBlackPlayer.ElapsedMilliseconds);
+            tsWhitePlayer = TimeSpan.FromMilliseconds(swWhitePlayer.ElapsedMilliseconds + timeSaveWhite);
+            tsBlackPlayer = TimeSpan.FromMilliseconds(swBlackPlayer.ElapsedMilliseconds + timeSaveBlack);
             whiteTimer.Content = tsWhitePlayer.ToString(@"mm\:ss\.fff");
             blackTimer.Content = tsBlackPlayer.ToString(@"mm\:ss\.fff");
         }
@@ -284,17 +300,18 @@ namespace Othello
         private void SaveGame_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Text file|*.txt|Csv file|*.csv";
+            saveFileDialog.Filter = "Binary File|*.bin";
             saveFileDialog.Title = "Save your game";
             saveFileDialog.ShowDialog();
 
             // If the file name is not an empty string open it for saving.  
             if (saveFileDialog.FileName != "")
             {
-                using (StreamWriter writetext = new StreamWriter(saveFileDialog.FileName))
-                {
-                    writetext.WriteLine(board);
-                }
+                Save save = new Save(board.GetValues(), isWhiteTurn, swWhitePlayer.ElapsedMilliseconds+timeSaveWhite, swBlackPlayer.ElapsedMilliseconds+timeSaveBlack);
+                IFormatter formatter = new BinaryFormatter();
+                Stream stream = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write, FileShare.None);
+                formatter.Serialize(stream, save);
+                stream.Close();
             }
         }
 
@@ -311,7 +328,7 @@ namespace Othello
 
             //infoColumn.Width = new GridLength(.3f * Window.GetWindow(this).Width);
             infoColumn.Width = new GridLength(300);
-            boardColumn.Width = new GridLength(Window.GetWindow(this).Width- 300);
+            boardColumn.Width = new GridLength(Window.GetWindow(this).ActualWidth - 300);
 
             int nRows = Board.RowDefinitions.Count;
             int nCols = Board.ColumnDefinitions.Count;

@@ -11,7 +11,15 @@ namespace Othello
     {
         public int[] values;
         public bool isWhiteTurn;
-        public TimeSpan tsJ1;
-        public TimeSpan tsJ2;
+        public long tsWhitePlayer;
+        public long tsBlackPlayer;
+
+        public Save(int[] values, bool isWhiteTurn, long tsWhitePlayer, long tsBlackPlayer)
+        {
+            this.values = values;
+            this.isWhiteTurn = isWhiteTurn;
+            this.tsWhitePlayer = tsWhitePlayer;
+            this.tsBlackPlayer = tsBlackPlayer;
+        }
     }
 }
