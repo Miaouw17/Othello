@@ -32,33 +32,16 @@ namespace Othello
             frame.NavigationService.Navigate(new Menu());
         }
 
-        /*private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            this.Width = e.NewSize.Width;
-            this.Height = e.NewSize.Height;
+            frame.Width = ((Window)sender).Width;
+            frame.Height = ((Window)sender).Height;
+        }
 
-            double xChange = 1, yChange = 1;
-
-            if (e.PreviousSize.Width != 0)
-                xChange = (e.NewSize.Width / e.PreviousSize.Width);
-
-            if (e.PreviousSize.Height != 0)
-                yChange = (e.NewSize.Height / e.PreviousSize.Height);
-
-            foreach (FrameworkElement fe in this.Children)
-            {
-                //because I didn't want to resize the grid I'm having inside the canvas in this particular instance. (doing that from xaml)
-                if (fe is Grid == false)
-                {
-                    fe.Height = fe.ActualHeight * yChange;
-                    fe.Width = fe.ActualWidth * xChange;
-
-                    Canvas.SetTop(fe, Canvas.GetTop(fe) * yChange);
-                    Canvas.SetLeft(fe, Canvas.GetLeft(fe) * xChange);
-
-                }
-            }
-        }*/
+        private void frame_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            
+        }
     }
 
     

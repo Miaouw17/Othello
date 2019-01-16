@@ -5,6 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Othello"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="800">
-    <Frame x:Name="frame" NavigationUIVisibility="Hidden" HorizontalAlignment="Left" Height="768" VerticalAlignment="Top" Width="790"/>
+        Title="MainWindow" Height="800" Width="1280" SizeChanged="Window_SizeChanged">
+    <Frame x:Name="frame" 
+           NavigationUIVisibility="Hidden" 
+           HorizontalContentAlignment="Stretch"
+           HorizontalAlignment="Stretch" 
+           Height="Auto" 
+           VerticalAlignment="Top"
+           VerticalContentAlignment="Stretch"
+           Width="Auto" 
+           SizeChanged="frame_SizeChanged"/>
 </Window>

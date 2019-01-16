@@ -5,23 +5,34 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Othello"
       mc:Ignorable="d" 
+      HorizontalAlignment="Stretch"
+      VerticalAlignment="Stretch"
       Height="Auto" Width="Auto"
       Title="Game">
-
-    <StackPanel Orientation="Horizontal" Margin="0,0,2,0" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-        <Border Height="600" Width="600" HorizontalAlignment="Left" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2">
-            <Grid x:Name="Board" ShowGridLines="False" Button.Click="Board_MouseDown">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto">
+            </ColumnDefinition>
+            <ColumnDefinition Width="300">
+            </ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto">
+            </RowDefinition>
+        </Grid.RowDefinitions>
+        <Border Grid.Column="0" Grid.Row="0"  Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="2">
+            <Grid x:Name="Board" ShowGridLines="False" Button.Click="Board_MouseDown" Width="Auto" Height="Auto">
                 <Grid.ColumnDefinitions>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                 </Grid.RowDefinitions>
             </Grid>
         </Border>
-        <StackPanel Orientation="Vertical" Width="195" HorizontalAlignment="Center" VerticalAlignment="Center" Height="135" Margin="0,319,0,314">
+        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical" Width="Auto" HorizontalAlignment="Right" VerticalAlignment="Center" Height="Auto" Margin="0,0,0,0">
             <StackPanel Orientation="Horizontal">
                 <Label x:Name="LabelJ1" Content="White score : "/>
                 <Label x:Name="ScoreJ1" Content="ScoreJ1" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-             </StackPanel>
+            </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label x:Name="LabelJ2" Content="Black score : "/>
                 <Label x:Name="ScoreJ2" Content="ScoreJ2" HorizontalAlignment="Center" VerticalAlignment="Top"/>
@@ -29,5 +40,7 @@
             <Button Content="Sauvegarder" Width="75" Click="SaveGame_Click"/>
             <Button Content="Retour" Margin="72,0" Click="BackMenu_Click"/>
         </StackPanel>
-    </StackPanel>
+        
+    </Grid>
+    
 </Page>

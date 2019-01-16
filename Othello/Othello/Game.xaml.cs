@@ -233,5 +233,6 @@ namespace Othello
         {
             this.NavigationService.Navigate(new Menu());
         }
+
     }
 }
