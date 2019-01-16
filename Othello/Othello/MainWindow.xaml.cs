@@ -32,6 +32,12 @@ namespace Othello
             frame.NavigationService.Navigate(new Menu());
         }
 
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            frame.Width = this.Width;
+            frame.Height = this.Height;
+        }
+
         /*private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             this.Width = e.NewSize.Width;

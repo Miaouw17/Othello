@@ -22,8 +22,8 @@ namespace Othello
     /// </summary>
     public partial class Game : Page
     {
-        private const int BOARD_WIDTH = 8;
-        private const int BOARD_HEIGHT = 8;
+        private const int BOARD_WIDTH = 9;
+        private const int BOARD_HEIGHT = 7;
         private List<Rectangle> caseList = new List<Rectangle>();
         private bool isWhiteTurn = true;
         private Player p1;
@@ -43,8 +43,9 @@ namespace Othello
             p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
             p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
             board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT); //TODO : Change name dynamically, using save name !
+
             InitializeComponent();
-            //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
+
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
             ScoreJ1.Content = board.GetWhiteScore();
             ScoreJ2.Content = board.GetBlackScore();
@@ -55,8 +56,9 @@ namespace Othello
             p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
             p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
             this.board = new OthelloBoard("Board",BOARD_WIDTH, BOARD_HEIGHT, values);
+
             InitializeComponent();
-            //AddHandler(FrameworkElement.MouseDownEvent, new MouseButtonEventHandler(Board_MouseDown), true);
+      
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
             ScoreJ1.Content = board.GetWhiteScore();
             ScoreJ2.Content = board.GetBlackScore();
@@ -232,6 +234,13 @@ namespace Othello
         private void BackMenu_Click(object sender, RoutedEventArgs e)
         {
             this.NavigationService.Navigate(new Menu());
+        }
+
+        private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            //Console.WriteLine(Window.GetWindow(this).Width);
+            boardColumn.Width = new GridLength(0.7 * Window.GetWindow(this).Width);
+            infoColumn.Width = new GridLength(0.3 * Window.GetWindow(this).Width);
         }
     }
 }
