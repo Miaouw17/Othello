@@ -15,7 +15,7 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Border x:Name ="board_Border" Grid.Column="0" Grid.Row="0" BorderBrush="Black" BorderThickness="0"> 
+        <Border x:Name ="board_Border" Grid.Column="0" Grid.Row="0" BorderBrush="Blue" BorderThickness="8"> 
             <Grid x:Name="Board" ShowGridLines="False" Button.Click="Board_MouseDown">
                 <Grid.ColumnDefinitions>
                 </Grid.ColumnDefinitions>
