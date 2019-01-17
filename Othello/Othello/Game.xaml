@@ -14,6 +14,11 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <Rectangle 
+            Grid.Column="0" Grid.Row="0" 
+            StrokeThickness="2"
+            Stroke="Transparent"
+            Fill="WhiteSmoke" />
         <Border x:Name ="board_Border" 
                 Grid.Column="0" Grid.Row="0" MinWidth="750"  Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="0" Margin="5">
 
