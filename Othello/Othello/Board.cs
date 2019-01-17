@@ -86,11 +86,11 @@ namespace Othello
                     if (getAllFlips(i % width, i / width, v).Count()>0) //TODO : improve
                     {
                         NextPossibleMoves.Add(i);
-                        Console.Write($" {i} ");
+                        //Console.Write($" {i} ");
                     }
                 }
             }
-            Console.WriteLine();
+            //Console.WriteLine();
         }
 
         /// <summary>
@@ -147,11 +147,21 @@ namespace Othello
             }
             else if ((x + y > width - 1))
             {
-                posDiagonalIndices = (indices.Where((val, index) =>
-                index % (width - 1) == (x + width * y) % (width - 1) &&
-                index % width >= (x + width * y) % (width - 1) &&
-                index / width >= (x + width * y) % (width - 1)
-                )).ToList();
+                if (width == height && x == width - 1 && y == height - 1) //Horrific but quickly fixes a bug for square maps
+                {
+                    posDiagonalIndices = new List<int>();
+                    posDiagonalIndices.Add(x+y*height);
+                }
+                else
+                {
+                    posDiagonalIndices = (indices.Where((val, index) =>
+                    index % (width - 1) == (x + width * y) % (width - 1) &&
+                    index % width >= (x + width * y) % (width - 1) &&
+                    index / width >= (x + width * y) % (width - 1)
+                    )).ToList();
+                }
+                
+                
             }
             else //x + y == width - 1
             {
@@ -160,6 +170,10 @@ namespace Othello
                 index % width >= (x + width * y) % (width - 1) &&
                 index / width >= (x + width * y) % (width - 1) &&
                 index != 0)).ToList();
+                if(width==height) //Horrific but quickly fixes a bug for square maps
+                { 
+                    posDiagonalIndices.RemoveAt(posDiagonalIndices.Count() - 1);
+                }
             }
             return posDiagonalIndices;
         }

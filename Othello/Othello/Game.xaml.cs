@@ -206,23 +206,37 @@ namespace Othello
                 board.PlayMove(boardX, boardY, isWhiteTurn);
                 UpdateTurn();
                 board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
-                DisplayBoard();
-                if (isWhiteTurn)
+                if(board.NextPossibleMoves.Count()==0)
                 {
-                    swWhitePlayer.Start();
-                    swBlackPlayer.Stop();
+                    whiteBlocked = blackBlocked = true;
+                    if (isWhiteTurn)
+                    {
+                        swWhitePlayer.Stop();
+                    }
+                    else
+                    {
+                        swBlackPlayer.Stop();
+                    }
                 }
                 else
                 {
-                    swWhitePlayer.Stop();
-                    swBlackPlayer.Start();
+                    if (isWhiteTurn)
+                    {
+                        swWhitePlayer.Start();
+                        swBlackPlayer.Stop();
+                    }
+                    else
+                    {
+                        swWhitePlayer.Stop();
+                        swBlackPlayer.Start();
+                    }
                 }
+                DisplayBoard();
+                
             }
 
             UpdatePlayableCells();
             UpdateScore();
-
-            Console.WriteLine($"whiteblocked:{whiteBlocked}, blackblocked:{blackBlocked}");
 
             if (whiteBlocked ^ blackBlocked)
             {
@@ -230,23 +244,21 @@ namespace Othello
                 string notTurn = isWhiteTurn ? "Black" : "White";
                 MessageBox.Show($"No possible move for {notTurn} !\n{turn} can keep playing.");
             }
-            if (whiteBlocked && blackBlocked || !board.Values.ToList().Contains(0))
+            if (whiteBlocked && blackBlocked)
             {
-                //End of game !
                 int sWhite = Convert.ToInt32(ScoreJ1.Content);
                 int sBlack = Convert.ToInt32(ScoreJ2.Content);
                 if (sWhite != sBlack)
                 {
                     string winner = "";
                     winner = sWhite > sBlack ? "White" : "Black";
-                    MessageBox.Show($"End of the game !\n{winner} wins !!!");
+                    MessageBox.Show($"GAME !\n{winner} wins !!!");
                 }
                 else
                 {
                     MessageBox.Show("Tie game !");
                 }
             }
-
         }
 
         private void UpdateTurn()
