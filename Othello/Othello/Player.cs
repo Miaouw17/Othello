@@ -11,6 +11,7 @@ namespace Othello
     {
         private int id;
         private string name;
+        private int score;
         private BitmapImage image;
         //private List<Pion> listPion; peut être utile plutot que de juste placer des image sur board
 
@@ -19,6 +20,16 @@ namespace Othello
             this.id = id;
             this.name = name;
             this.image = image;
+        }
+
+        public void SetScore(int score)
+        {
+            this.score = score;
+        }
+
+        public int GetScore()
+        {
+            return this.score;
         }
 
         public BitmapImage getImage()
