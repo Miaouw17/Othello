@@ -18,13 +18,14 @@ using System.Diagnostics;
 using System.Timers;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.ComponentModel;
 
 namespace Othello
 {
     /// <summary>
     /// Logique d'interaction pour Game.xaml
     /// </summary>
-    public partial class Game : Page
+    public partial class Game : Page, INotifyPropertyChanged
     {
         private const int BOARD_WIDTH = 9;
         private const int BOARD_HEIGHT = 7;
@@ -35,9 +36,7 @@ namespace Othello
         private Player p1;
         private Player p2;
 
-        public int WhiteScore { get; set; }
-        public int BlackScore { get; set; }
-
+       
         private Stopwatch swWhitePlayer;
         private Stopwatch swBlackPlayer;
         private TimeSpan tsWhitePlayer;
@@ -93,6 +92,39 @@ namespace Othello
 
             initTimer();
         }
+
+        // BINDING
+        public int WhiteScore
+        {
+            get { return board.GetWhiteScore(); }
+            set { p1.SetScore(value); RaisePropertyChanged("WhiteScore"); }
+        }
+
+        public int BlackScore
+        {
+            get { return board.GetBlackScore(); }
+            set { p2.SetScore(value); RaisePropertyChanged("BlackScore"); }
+        }
+
+        public TimeSpan WhiteTimer
+        {
+            get { return tsWhitePlayer; }
+            set { tsWhitePlayer = value; RaisePropertyChanged("WhiteTimer"); }
+        }
+
+        public TimeSpan BlackTimer
+        {
+            get { return tsBlackPlayer; }
+            set { tsBlackPlayer = value; RaisePropertyChanged("BlackTimer"); }
+        }
+
+        void RaisePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+       
+        public event PropertyChangedEventHandler PropertyChanged;
 
         private void initTimer()
         {
@@ -283,16 +315,12 @@ namespace Othello
         {
             WhiteScore = board.GetWhiteScore();
             BlackScore = board.GetBlackScore();
-            ScoreJ1.GetBindingExpression(Label.ContentProperty).UpdateTarget();
-            ScoreJ2.GetBindingExpression(Label.ContentProperty).UpdateTarget();
         }
 
         private void UpdateTimers()
         {
-            tsWhitePlayer = TimeSpan.FromMilliseconds(swWhitePlayer.ElapsedMilliseconds + timeSaveWhite);
-            tsBlackPlayer = TimeSpan.FromMilliseconds(swBlackPlayer.ElapsedMilliseconds + timeSaveBlack);
-            whiteTimer.Content = tsWhitePlayer.ToString(@"mm\:ss\.fff");
-            blackTimer.Content = tsBlackPlayer.ToString(@"mm\:ss\.fff");
+            WhiteTimer = TimeSpan.FromMilliseconds(swWhitePlayer.ElapsedMilliseconds + timeSaveWhite);
+            BlackTimer = TimeSpan.FromMilliseconds(swBlackPlayer.ElapsedMilliseconds + timeSaveBlack);
         }
 
         private void UpdatePlayableCells()
