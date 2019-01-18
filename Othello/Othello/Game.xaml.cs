@@ -393,6 +393,7 @@ namespace Othello
                 }
             }
 
+            // Could be binding
             buttonUndo.IsEnabled = (stackUndo.Count() != 0);
             buttonRedo.IsEnabled = (stackRedo.Count() != 0);
         }
