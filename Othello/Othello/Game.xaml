@@ -45,6 +45,7 @@
                 <RowDefinition Height="60"/>
                 <RowDefinition Height="60"/>
                 <RowDefinition Height="120"/>
+                <RowDefinition/>
                 <RowDefinition Height="120"/>
                 <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
@@ -81,17 +82,31 @@
                    Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
                    FontFamily="Segoe UI" FontSize="20" Margin="0,40,0,0"
                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            
+
             <!-- BUTTONS-->
+            <Button x:Name="buttonUndo" Content="Undo" 
+                   FontFamily="Segoe UI Light" FontSize="30"
+                   Grid.Column="0" Grid.Row="4"
+                   Width="100"
+                   Click="Undo_Click"
+                   HorizontalAlignment="Stretch"/>
+
+            <Button x:Name="buttonRedo" Content="Redo" 
+                   FontFamily="Segoe UI Light" FontSize="30"
+                   Grid.Column="1" Grid.Row="4"
+                   Width="100"
+                   Click="Redo_Click"
+                   HorizontalAlignment="Stretch"/>
+
             <Button x:Name="buttonSave" Content="Save" 
                    FontFamily="Segoe UI Light" FontSize="30"
-                   Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" 
+                   Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" 
                     Width ="200"
                    Click="SaveGame_Click" 
                    HorizontalAlignment="Stretch" Margin="20,62,20,2"/>
             <Button x:Name="buttonBack" Content="Back"
                    FontFamily="Segoe UI Light" FontSize="30"
-                   Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" 
+                   Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2" 
                    Click="BackMenu_Click" 
                    Width ="200" HorizontalAlignment="Center" Margin="20,2,20,2"/>
         </Grid>

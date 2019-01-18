@@ -36,6 +36,8 @@ namespace Othello
         private Player p1;
         private Player p2;
 
+        private Stack<Tuple<int[], bool>> stackUndo;
+        private Stack<Tuple<int[], bool>> stackRedo;
        
         private Stopwatch swWhitePlayer;
         private Stopwatch swBlackPlayer;
@@ -63,6 +65,9 @@ namespace Othello
             p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
             this.board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT); //TODO : Change name dynamically, using save name !
 
+            stackUndo = new Stack<Tuple<int[], bool>>();
+            stackRedo = new Stack<Tuple<int[], bool>>();
+
             InitializeComponent();
 
             GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
@@ -72,7 +77,7 @@ namespace Othello
             initTimer();
         }
 
-        public Game(int[] values, bool isWhiteTurn, long timeSaveWhite, long timeSaveBlack)
+        public Game(int[] values, bool isWhiteTurn, long timeSaveWhite, long timeSaveBlack, Stack<Tuple<int[],bool>> stackUndo, Stack<Tuple<int[],bool>> stackRedo)
         {
             this.DataContext = this;
 
@@ -83,6 +88,8 @@ namespace Othello
             this.isWhiteTurn = isWhiteTurn;
             this.timeSaveWhite = timeSaveWhite;
             this.timeSaveBlack = timeSaveBlack;
+            this.stackUndo = stackUndo;
+            this.stackRedo = stackRedo;
 
             InitializeComponent();
 
@@ -235,6 +242,11 @@ namespace Othello
 
             if (board.IsPlayable(boardX, boardY, isWhiteTurn))
             {
+                // push step on undostack
+                stackUndo.Push(new Tuple<int[], bool>(board.GetValues(), isWhiteTurn));
+                // clean redo stack
+                stackRedo.Clear();
+
                 board.PlayMove(boardX, boardY, isWhiteTurn);
                 UpdateTurn();
                 board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
@@ -381,6 +393,8 @@ namespace Othello
                 }
             }
 
+            buttonUndo.IsEnabled = (stackUndo.Count() != 0);
+            buttonRedo.IsEnabled = (stackRedo.Count() != 0);
         }
 
         private void Board_MouseDown(object sender, RoutedEventArgs e)
@@ -403,7 +417,7 @@ namespace Othello
             // If the file name is not an empty string open it for saving.  
             if (saveFileDialog.FileName != "")
             {
-                Save save = new Save(board.GetValues(), isWhiteTurn, swWhitePlayer.ElapsedMilliseconds+timeSaveWhite, swBlackPlayer.ElapsedMilliseconds+timeSaveBlack);
+                Save save = new Save(board.Values, isWhiteTurn, swWhitePlayer.ElapsedMilliseconds+timeSaveWhite, swBlackPlayer.ElapsedMilliseconds+timeSaveBlack, stackUndo, stackRedo);
                 IFormatter formatter = new BinaryFormatter();
                 Stream stream = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write, FileShare.None);
                 formatter.Serialize(stream, save);
@@ -449,6 +463,46 @@ namespace Othello
             Board.Margin = new Thickness(w, h-25, w, h);
         }
 
-        
+        private void Undo_Click(object sender, RoutedEventArgs e)
+        {
+            if (stackUndo.Count() > 0)
+            {
+                // push step on redo stack
+                bool turn = isWhiteTurn;
+                stackRedo.Push(new Tuple<int[], bool>(board.GetValues(), turn));
+
+                // pull undo stack and apply
+                Tuple<int[], bool> step = stackUndo.Pop();
+                board.Values = step.Item1;
+                isWhiteTurn = step.Item2;
+                board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
+                DisplayBoard();
+            }
+            else
+            {
+                Console.WriteLine("UndoStack EMPTY");
+            }
+        }
+
+        private void Redo_Click(object sender, RoutedEventArgs e)
+        {
+            if(stackRedo.Count() > 0)
+            {
+                // push step into undo stack
+                bool turn = isWhiteTurn;
+                stackUndo.Push(new Tuple<int[],bool>(board.GetValues(), turn));
+
+                // pull redo stack and apply
+                Tuple<int[], bool> step = stackRedo.Pop();
+                board.Values = step.Item1;
+                isWhiteTurn = step.Item2;
+                board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
+                DisplayBoard();
+            }
+            else
+            {
+                Console.WriteLine("RedoStack EMPTY");
+            }
+        }
     }
 }

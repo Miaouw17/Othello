@@ -43,58 +43,11 @@ namespace Othello
 
             if(openFileDialog.ShowDialog() == true)
             {
-                /*int height = 0;
-                int width = 0;
-                int[] board;
-                string filename = openFileDialog.FileName;
-                //Console.Write(File.ReadAllText(filename));
-                using (var reader = new StreamReader(filename))
-                {
-                    int index = 0;
-                    height = File.ReadAllLines(filename).Count();
-                    var firstval = reader.ReadLine().Split(',');
-                    width = firstval.Count();
-                    board = new int[height * width];
-
-                    // parce que le reader est deja a la fin de la premiere ligne
-                    foreach (var v in firstval)
-                    {
-                        if (v != "")
-                        {
-                            board[index] = Convert.ToInt32(v);
-                            index++;
-                        }
-                    }
-
-                    // débute à la 2eme ligne (moyen d'opti mais j'aimerais que ça marche avant)
-                    while (!reader.EndOfStream)
-                    {
-                        foreach(var v in reader.ReadLine().Split(','))
-                        {
-                            if (v != "")
-                            {
-                                board[index] = Convert.ToInt32(v);
-                                index++;
-                            }
-                        }
-                    }
-                    Console.WriteLine(width);
-                    Console.WriteLine(height-1);
-                    for (int i = 0; i < index; i++)
-                    {
-                        Console.Write(board[i]);
-                        if((i+1) % width == 0)
-                        {
-                            Console.WriteLine();
-                        }
-                    }
-                   this.NavigationService.Navigate(new Game(board));
-                }*/
                 IFormatter formatter = new BinaryFormatter();
                 Stream stream = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
                 Save save = (Save)formatter.Deserialize(stream);
                 stream.Close();
-                this.NavigationService.Navigate(new Game(save.values, save.isWhiteTurn, save.tsWhitePlayer, save.tsBlackPlayer));
+                this.NavigationService.Navigate(new Game(save.values, save.isWhiteTurn, save.tsWhitePlayer, save.tsBlackPlayer, save.stackUndo, save.stackRedo));
             }
         }
 
