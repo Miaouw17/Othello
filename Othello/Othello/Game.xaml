@@ -14,7 +14,7 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Rectangle 
+        <Rectangle x:Name="bgBoard"
             Grid.Column="0" Grid.Row="0" 
             StrokeThickness="2"
             Stroke="Transparent"
