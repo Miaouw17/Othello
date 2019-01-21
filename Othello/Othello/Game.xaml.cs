@@ -478,6 +478,7 @@ namespace Othello
                 isWhiteTurn = step.Item2;
                 board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
                 DisplayBoard();
+                UpdateScore();
             }
             else
             {
@@ -499,6 +500,7 @@ namespace Othello
                 isWhiteTurn = step.Item2;
                 board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
                 DisplayBoard();
+                UpdateScore();
             }
             else
             {
