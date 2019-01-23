@@ -442,15 +442,8 @@ namespace Othello
         {
             WhiteScore = board.GetWhiteScore();
             BlackScore = board.GetBlackScore();
-            float whitePerc = (WhiteScore) / (float)(WhiteScore + BlackScore);
-            float blackPerc = 1-whitePerc;
-            float diff = Math.Abs(whitePerc - blackPerc);
-
-            GradientStopCollection gsc = new GradientStopCollection(2);
-
-            gsc.Add(new GradientStop(Color.FromRgb(255, 255, 255), blackPerc > whitePerc ? 1 : 1 - diff));
-            gsc.Add(new GradientStop(Color.FromRgb(0, 0, 0), blackPerc > whitePerc ? 1 - diff : 0));
-            bgBoard.Fill = new LinearGradientBrush(gsc, 90.0);
+            byte gray = (byte)((WhiteScore / (double)(WhiteScore+BlackScore))*255);
+            bgBoard.Fill = new SolidColorBrush(Color.FromRgb(gray,gray,gray));
         }
 
         private void UpdateTimers()
