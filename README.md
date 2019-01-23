@@ -27,6 +27,13 @@ Classe Board -> explication vague...
 ## Undo/Redo
 Pour permettre à l'utilisateur d'utiliser les fonctionnalités d'Undo et Redo, nous avons mis en place 2 piles contenant des Tuple<int[], bool> qui contiennent l'etat du plateau de jeu (int[]) et le joueur à qui c'était de jouer (bool).
 
+### Fonctionnement
+A chaque coup jouer par un joueur, juste avant d'entrer son coup dans le plateau de jeu, nous enregistrons l'etat du plateau dans la pile de Undo ainsi que le boolean permettant de définir le joueur qui joue.
+
+Quand l'utilisateur utilise le bouton Undo, juste avant de réaliser la marche arrière, nous enregistrons l'état du plateau actuel dans la pile avec le boolean du joueur qui doit jouer afin de pouvoir revenir à l'état avant Undo.
+
+Lorsqu'un joueur a jouer un coup après avoir Undo, la pile de Redo se vide pour éviter de pouvoir revenir dans une configuration étrange.
+
 ## Sauvegarde
 Pour la sauvegarde, nous avons créer une classe à part du nom de "Save" contenant les informations nécessaire au chargement d'une partie. C'est à dire ;
 * int[] values; // état du plateau
