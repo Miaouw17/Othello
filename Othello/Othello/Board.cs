@@ -349,14 +349,22 @@ namespace Othello
             return debug.ToString();
         }
 
-        public int[] GetValues()
-        {
-            return values;
-        }
-
         private int ix(int x, int y)
         {
             return x + y * width;
+        }
+
+        /// <summary>
+        /// Deep copy
+        /// </summary>
+        public int[] GetValues()
+        {
+            int[] copy = new int[values.Count()];
+            for(int i=0;i<values.Count();i++)
+            {
+                copy[i] = values[i];
+            }
+            return copy;
         }
 
         private static void print(List<int> l)
