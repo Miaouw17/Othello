@@ -5,7 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Othello"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="1050" SizeChanged="Window_SizeChanged" MinHeight="600" MinWidth="1050" SourceInitialized="Window_SourceInitialized">
+        Title="Othello.cs"
+        Height="600" Width="1050" 
+        SizeChanged="Window_SizeChanged" 
+        MinHeight="600" MinWidth="1050" 
+        SourceInitialized="Window_SourceInitialized">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>

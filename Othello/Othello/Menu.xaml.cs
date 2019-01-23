@@ -20,15 +20,18 @@ using System.Windows.Shapes;
 namespace Othello
 {
     /// <summary>
-    /// Logique d'interaction pour Menu.xaml
+    /// Menu.xaml logical interactions
     /// </summary>
     public partial class Menu : Page
     {
+        #region Constructors
         public Menu()
         {
             InitializeComponent();
         }
+        #endregion
 
+        #region Events
         private void NewGame_Click(object sender, RoutedEventArgs e)
         {
             this.NavigationService.Navigate(new Game());
@@ -55,5 +58,7 @@ namespace Othello
         {
             Environment.Exit(0);
         }
+
+        #endregion
     }
 }

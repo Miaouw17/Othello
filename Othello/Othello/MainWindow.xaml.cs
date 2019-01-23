@@ -18,16 +18,20 @@ using System.Windows.Shapes;
 namespace Othello
 {
     /// <summary>
-    /// Logique d'interaction pour MainWindow.xaml
+    /// MainWindows's logical interactions
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Constructors
         public MainWindow()
         {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
         }
-       
+
+        #endregion
+
+        #region Events
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             frame.NavigationService.Navigate(new Menu());
@@ -38,6 +42,8 @@ namespace Othello
             frame.Width = this.ActualWidth-15;
             frame.Height = this.ActualHeight-25;
         }
+
+        #endregion
 
         #region Cancel Maximizing
         /* This part cancels the maximizing feature (drop on top + button) */
@@ -58,10 +64,4 @@ namespace Othello
         }
         #endregion
     }
-
-    
-
-    /* Logique : Il ne devrait pas y avoir de fonction "IsPlayable". On devrait plutôt ne laisser le user cliquer que sur les cases qui sont playable.
-     * de cette façon il y a pas besoin de checker si elles le sont .
-     */
 }

@@ -23,10 +23,11 @@ using System.ComponentModel;
 namespace Othello
 {
     /// <summary>
-    /// Logique d'interaction pour Game.xaml
+    /// Game.xaml logical interactions
     /// </summary>
     public partial class Game : Page, INotifyPropertyChanged
     {
+        #region Attributes
         private const int BOARD_WIDTH = 9;
         private const int BOARD_HEIGHT = 7;
         private List<Rectangle> caseList = new List<Rectangle>();
@@ -35,10 +36,8 @@ namespace Othello
         private bool blackBlocked = false;
         private Player p1;
         private Player p2;
-
         private Stack<Tuple<int[], bool>> stackUndo;
         private Stack<Tuple<int[], bool>> stackRedo;
-       
         private Stopwatch swWhitePlayer;
         private Stopwatch swBlackPlayer;
         private TimeSpan tsWhitePlayer;
@@ -46,17 +45,17 @@ namespace Othello
         private TimeSpan tsBlackPlayer;
         private long timeSaveBlack=0;
         private Timer timer;
-
-        private static BitmapImage bmpEmpty = new BitmapImage(new Uri(@"frameempty.jpg", UriKind.Relative));
-        private static BitmapImage bmpNWhite = new BitmapImage(new Uri(@"framenextwhite.jpg", UriKind.Relative));
-        private static BitmapImage bmpNBlack = new BitmapImage(new Uri(@"framenextblack.jpg", UriKind.Relative));
-        private static Uri uriWhite = new Uri(@"framewhite.jpg", UriKind.Relative);
-        private static Uri uriBlack = new Uri(@"frameblack.jpg", UriKind.Relative);
+        private static BitmapImage bmpEmpty = new BitmapImage(new Uri(@"./img/frameempty.jpg", UriKind.Relative));
+        private static BitmapImage bmpNWhite = new BitmapImage(new Uri(@"./img/framenextwhite.jpg", UriKind.Relative));
+        private static BitmapImage bmpNBlack = new BitmapImage(new Uri(@"./img/framenextblack.jpg", UriKind.Relative));
+        private static Uri uriWhite = new Uri(@"./img/framewhite.jpg", UriKind.Relative);
+        private static Uri uriBlack = new Uri(@"./img/frameblack.jpg", UriKind.Relative);
         private OthelloBoard board;
-
         private const string NAME_PLAYER_1 = "White";
         private const string NAME_PLAYER_2 = "Black";
+        #endregion
 
+        #region Constructors
         public Game()
         {
             this.DataContext = this;
@@ -99,18 +98,20 @@ namespace Othello
 
             initTimer();
         }
+        #endregion
 
+        #region Properties
         // BINDING
         public int WhiteScore
         {
             get { return board.GetWhiteScore(); }
-            set { p1.SetScore(value); RaisePropertyChanged("WhiteScore"); }
+            set { p1.Score = value; RaisePropertyChanged("WhiteScore"); }
         }
 
         public int BlackScore
         {
             get { return board.GetBlackScore(); }
-            set { p2.SetScore(value); RaisePropertyChanged("BlackScore"); }
+            set { p2.Score = value; RaisePropertyChanged("BlackScore"); }
         }
 
         public TimeSpan WhiteTimer
@@ -130,9 +131,116 @@ namespace Othello
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
-       
+        #endregion
+
+        #region Events
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private void SaveGame_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Binary File|*.bin";
+            saveFileDialog.Title = "Save your game";
+            saveFileDialog.ShowDialog();
+
+            // If the file name is not an empty string open it for saving.  
+            if (saveFileDialog.FileName != "")
+            {
+                Save save = new Save(board.Values, isWhiteTurn, swWhitePlayer.ElapsedMilliseconds + timeSaveWhite, swBlackPlayer.ElapsedMilliseconds + timeSaveBlack, stackUndo, stackRedo);
+                IFormatter formatter = new BinaryFormatter();
+                Stream stream = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write, FileShare.None);
+                formatter.Serialize(stream, save);
+                stream.Close();
+            }
+        }
+
+        private void BackMenu_Click(object sender, RoutedEventArgs e)
+        {
+            this.NavigationService.Navigate(new Menu());
+        }
+
+        private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // Here you can resize every element of the page dependant of the mainwindow size
+            // Column proportion
+
+            //infoColumn.Width = new GridLength(.3f * Window.GetWindow(this).Width);
+            infoColumn.Width = new GridLength(300);
+            boardColumn.Width = new GridLength(Window.GetWindow(this).ActualWidth - 300);
+
+
+            int nRows = Board.RowDefinitions.Count;
+            int nCols = Board.ColumnDefinitions.Count;
+
+            double min = Math.Min(board_Border.ActualHeight / (nRows + 1), board_Border.ActualWidth / (nCols + 1));
+
+            GridLength gl = new GridLength((int)min, GridUnitType.Pixel);
+            Board.ColumnDefinitions[0].Width = new GridLength(50);
+            Board.RowDefinitions[0].Height = new GridLength(50);
+            for (int i = 1; i < nCols; i++)
+            {
+                Board.ColumnDefinitions[i].Width = gl;
+            }
+            for (int i = 1; i < nRows; i++)
+            {
+                Board.RowDefinitions[i].Height = gl;
+            }
+
+            double w = (board_Border.ActualWidth - min * nCols) / 2;
+            double h = (board_Border.ActualHeight - min * nRows) / 2;
+
+            Board.Margin = new Thickness(w, h - 25, w, h);
+        }
+
+        private void Undo_Click(object sender, RoutedEventArgs e)
+        {
+            if (stackUndo.Count() > 0)
+            {
+                // push step on redo stack
+                bool turn = isWhiteTurn;
+                stackRedo.Push(new Tuple<int[], bool>(board.GetValues(), turn));
+
+                // pull undo stack and apply
+                Tuple<int[], bool> step = stackUndo.Pop();
+                board.Values = step.Item1;
+                isWhiteTurn = step.Item2;
+                board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
+                DisplayBoard();
+                UpdateScore();
+            }
+            else
+            {
+                Console.WriteLine("UndoStack EMPTY");
+            }
+            lblTurn.Content = isWhiteTurn ? "It's White's turn !" : "It's Black's turn !";
+        }
+
+        private void Redo_Click(object sender, RoutedEventArgs e)
+        {
+            if (stackRedo.Count() > 0)
+            {
+                // push step into undo stack
+                bool turn = isWhiteTurn;
+                stackUndo.Push(new Tuple<int[], bool>(board.GetValues(), turn));
+
+                // pull redo stack and apply
+                Tuple<int[], bool> step = stackRedo.Pop();
+                board.Values = step.Item1;
+                isWhiteTurn = step.Item2;
+                board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
+                DisplayBoard();
+                UpdateScore();
+            }
+            else
+            {
+                Console.WriteLine("RedoStack EMPTY");
+            }
+            lblTurn.Content = isWhiteTurn ? "It's White's turn !" : "It's Black's turn !";
+        }
+
+        #endregion
+
+        #region Private Methods
         private void initTimer()
         {
             swWhitePlayer = new Stopwatch();
@@ -229,11 +337,6 @@ namespace Othello
             //TODO
         }
 
-        /// <summary>
-        /// Handles a click on a rectangle on the grid.
-        /// </summary>
-        /// <param name="sender">Rectangle object on which the click has happend on.</param>
-        /// <param name="e">Event args</param>
         private void X_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Tuple<int, int> coords = ((Tuple<int, int>)((Rectangle)sender).DataContext); //Extracting coords from Rectangle DataContext.
@@ -384,12 +487,12 @@ namespace Othello
                     if (board[ix(x - 1, y - 1)] == 1) //Blanc
                     {
                         Rectangle r = caseList.Find(rec => rec.DataContext.Equals(new Tuple<int, int>(x, y)));
-                        r.Fill = new ImageBrush(p1.getImage());
+                        r.Fill = new ImageBrush(p1.Image);
                     }
                     else if (board[ix(x - 1, y - 1)] == -1) //Noir
                     {
                         Rectangle r = caseList.Find(rec => rec.DataContext.Equals(new Tuple<int, int>(x, y)));
-                        r.Fill = new ImageBrush(p2.getImage());
+                        r.Fill = new ImageBrush(p2.Image);
                     }
                     else if (board[ix(x - 1, y - 1)] == 0)
                     {
@@ -417,104 +520,6 @@ namespace Othello
             return x + y * board.Width;
         }
 
-        private void SaveGame_Click(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Binary File|*.bin";
-            saveFileDialog.Title = "Save your game";
-            saveFileDialog.ShowDialog();
-
-            // If the file name is not an empty string open it for saving.  
-            if (saveFileDialog.FileName != "")
-            {
-                Save save = new Save(board.Values, isWhiteTurn, swWhitePlayer.ElapsedMilliseconds+timeSaveWhite, swBlackPlayer.ElapsedMilliseconds+timeSaveBlack, stackUndo, stackRedo);
-                IFormatter formatter = new BinaryFormatter();
-                Stream stream = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write, FileShare.None);
-                formatter.Serialize(stream, save);
-                stream.Close();
-            }
-        }
-
-        private void BackMenu_Click(object sender, RoutedEventArgs e)
-        {
-            this.NavigationService.Navigate(new Menu());
-        }
-
-        private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            // Here you can resize every element of the page dependant of the mainwindow size
-            // Column proportion
-            
-            //infoColumn.Width = new GridLength(.3f * Window.GetWindow(this).Width);
-            infoColumn.Width = new GridLength(300);
-            boardColumn.Width = new GridLength(Window.GetWindow(this).ActualWidth - 300);
-
-
-            int nRows = Board.RowDefinitions.Count;
-            int nCols = Board.ColumnDefinitions.Count;
-
-            double min = Math.Min(board_Border.ActualHeight / (nRows+1), board_Border.ActualWidth / (nCols+1));
-
-            GridLength gl = new GridLength((int)min, GridUnitType.Pixel);
-            Board.ColumnDefinitions[0].Width = new GridLength(50);
-            Board.RowDefinitions[0].Height = new GridLength(50);
-            for (int i = 1; i < nCols; i++)
-            {
-                Board.ColumnDefinitions[i].Width = gl;
-            }
-            for (int i = 1; i < nRows; i++)
-            {
-                Board.RowDefinitions[i].Height = gl;
-            }
-
-            double w = (board_Border.ActualWidth - min * nCols) / 2;
-            double h = (board_Border.ActualHeight - min * nRows) / 2;
-
-            Board.Margin = new Thickness(w, h-25, w, h);
-        }
-
-        private void Undo_Click(object sender, RoutedEventArgs e)
-        {
-            if (stackUndo.Count() > 0)
-            {
-                // push step on redo stack
-                bool turn = isWhiteTurn;
-                stackRedo.Push(new Tuple<int[], bool>(board.GetValues(), turn));
-
-                // pull undo stack and apply
-                Tuple<int[], bool> step = stackUndo.Pop();
-                board.Values = step.Item1;
-                isWhiteTurn = step.Item2;
-                board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
-                DisplayBoard();
-                UpdateScore();
-            }
-            else
-            {
-                Console.WriteLine("UndoStack EMPTY");
-            }
-        }
-
-        private void Redo_Click(object sender, RoutedEventArgs e)
-        {
-            if(stackRedo.Count() > 0)
-            {
-                // push step into undo stack
-                bool turn = isWhiteTurn;
-                stackUndo.Push(new Tuple<int[],bool>(board.GetValues(), turn));
-
-                // pull redo stack and apply
-                Tuple<int[], bool> step = stackRedo.Pop();
-                board.Values = step.Item1;
-                isWhiteTurn = step.Item2;
-                board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
-                DisplayBoard();
-                UpdateScore();
-            }
-            else
-            {
-                Console.WriteLine("RedoStack EMPTY");
-            }
-        }
+        #endregion
     }
 }

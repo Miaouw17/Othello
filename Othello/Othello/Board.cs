@@ -6,15 +6,21 @@ using System.Threading.Tasks;
 
 namespace Othello
 {
+    /// <summary>
+    /// This class represents an Othello game board and its rules
+    /// </summary>
     class OthelloBoard : IPlayable.IPlayable
     {
+        #region Attributes
         private String name;
         private int[] values;
         private int[] indices;
         private List<int> nextPossibleMoves;
         private int width;
         private int height;
+        #endregion
 
+        #region Properties
         public int this[int i] {
             get => Values[i];
             set => Values[i] = value;
@@ -23,8 +29,9 @@ namespace Othello
         public int Height { get => height;}
         public List<int> NextPossibleMoves { get => nextPossibleMoves; set => nextPossibleMoves = value; }
         public int[] Values { get => values; set => values = value; }
+        #endregion
 
-        //enum CellState { BLACK=-1, WHITE=1, EMPTY=0};
+        #region Constructors
         public OthelloBoard(String name, int width, int height)
         {
             this.name = name;
@@ -61,6 +68,9 @@ namespace Othello
             UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
         }
 
+        #endregion
+
+        #region Private Methods
         private void MakeInitialBoard()
         {
             for (var i = 0; i < width * height; i++)
@@ -69,72 +79,34 @@ namespace Othello
             }
             int yMid = height >> 1;
             int xMid = width >> 1;
-            Values[ix(xMid-1, yMid-1)] = 1;
-            Values[ix(xMid, yMid-1)] = -1;
-            Values[ix(xMid-1, yMid)] = -1;
+            Values[ix(xMid - 1, yMid - 1)] = 1;
+            Values[ix(xMid, yMid - 1)] = -1;
+            Values[ix(xMid - 1, yMid)] = -1;
             Values[ix(xMid, yMid)] = 1;
             UpdateNextPossibleMoves(1); // 1 : White begins
         }
 
-        public void UpdateNextPossibleMoves(int v)
+        private List<int> getAllFlips(int x, int y, int v)
         {
-            NextPossibleMoves.Clear();
-            for (int i = 0; i < width * height; i++)
-            {
-                if(Values[i]==0)
-                {
-                    if (getAllFlips(i % width, i / width, v).Count()>0) //TODO : improve
-                    {
-                        NextPossibleMoves.Add(i);
-                        //Console.Write($" {i} ");
-                    }
-                }
-            }
-            //Console.WriteLine();
-        }
-
-        /// <summary>
-        /// Adds a disk on the played cell and performs flipping operations on disks
-        /// </summary>
-        /// <param name="x">x-composant of the cell played</param>
-        /// <param name="y">y-composant of the cell played</param>
-        /// <param name="v">value of the current player (1 or -1)</param>
-        public void Play(int x, int y, int v)
-        {
-            int index = ix(x,y);
-            Console.WriteLine($"Play x:{x} y:{y} index:{index}");
-
-            /* Here we assume that the move is valid and doable.
-             * What we have to do is to find which cell will switch color.
-             * To do so we need to save every indices that are in same lines (vertical and horizontal)
-             * and diagonals (positive and negative) as the current cell (x,y).
-             */
-            Values[index] = v;
-            
-
-            /* Now that all indices are saved, we need to define which disk will be flipped.
-             * The rule for a valid move is the following :
-             * 
-             * "You can play a disc when you flank one or more opponents discs between your new disc 
-             * and any other of your own discs, in the same horizontal, vertical or diagonal line."
-             * - source : https://www.yourturnmyturn.com/rules/reversi.php
-             * 
-             * Assuming the move in x,y is already valid, we only need to define which disk will be flipped
-             * and switch their owner.
-             */
-
-            List<int> listOfFlippedDisksIndices = getAllFlips(x, y, v);
-            foreach(int diskIndex in listOfFlippedDisksIndices)
-            {
-                Values[diskIndex] = v;
-            }
-            UpdateNextPossibleMoves(v*-1); // Update the list of possible moves for next player (v*=-1)
+            List<int> verticalIndices = getVerticalIndices(x, y);       // Board indices in vertical line relative to (x,y) cell. 
+            List<int> horizontalIndices = getHorizontalIndices(x, y);   // Board indices in horizontal line relative to (x,y) cell. 
+            List<int> negativeDiagonalIndices = getNegativeDiagonalIndices(x, y); // Board indices in negative diagonal (\), relative to (x,y) cell.
+            List<int> positiveDiagonalIndices = getPositiveDiagonalIndices(x, y); // Board indices in positive diagonal (/), relative to (x,y) cell.
+            List<int> allFlips = new List<int>();
+            allFlips.AddRange(getFlips(verticalIndices, getListOfValuesFromListOfIndices(verticalIndices), v, ix(x, y)));
+            allFlips.AddRange(getFlips(horizontalIndices, getListOfValuesFromListOfIndices(horizontalIndices), v, ix(x, y)));
+            allFlips.AddRange(getFlips(positiveDiagonalIndices, getListOfValuesFromListOfIndices(positiveDiagonalIndices), v, ix(x, y)));
+            allFlips.AddRange(getFlips(negativeDiagonalIndices, getListOfValuesFromListOfIndices(negativeDiagonalIndices), v, ix(x, y)));
+            return allFlips;
         }
 
         private List<int> getPositiveDiagonalIndices(int x, int y)
         {
             /* The following formulas may not be perfect nor optimal, but they seem to work for any width and height of the board.
              * At least they work for sure for our (X,Y = 9,7) case.
+             * 
+             * This version is shaped like python's list comprehensions but happens that C# Linq is way less efficient. 
+             * It works well since the board is not too large, but in a general case we should find an other way to find thoses indices.
              */
             List<int> posDiagonalIndices;
             if (x + y < width - 1)
@@ -150,7 +122,7 @@ namespace Othello
                 if (width == height && x == width - 1 && y == height - 1) //Horrific but quickly fixes a bug for square maps
                 {
                     posDiagonalIndices = new List<int>();
-                    posDiagonalIndices.Add(x+y*height);
+                    posDiagonalIndices.Add(x + y * height);
                 }
                 else
                 {
@@ -160,8 +132,8 @@ namespace Othello
                     index / width >= (x + width * y) % (width - 1)
                     )).ToList();
                 }
-                
-                
+
+
             }
             else //x + y == width - 1
             {
@@ -170,8 +142,8 @@ namespace Othello
                 index % width >= (x + width * y) % (width - 1) &&
                 index / width >= (x + width * y) % (width - 1) &&
                 index != 0)).ToList();
-                if(width==height) //Horrific but quickly fixes a bug for square maps
-                { 
+                if (width == height) //Horrific but quickly fixes a bug for square maps
+                {
                     posDiagonalIndices.RemoveAt(posDiagonalIndices.Count() - 1);
                 }
             }
@@ -182,6 +154,9 @@ namespace Othello
         {
             /* The following formulas may not be perfect nor optimal, but they seem to work for any width and height of the board.
              * At least they work for sure for our (X,Y = 9,7) case.
+             * 
+             * This version is shaped like python's list comprehensions but happens that C# Linq is way less efficient. 
+             * It works well since the board is not too large, but in a general case we should find an other way to find thoses indices.
              */
             List<int> negDiagonalIndices;
             if (x >= y)
@@ -211,35 +186,15 @@ namespace Othello
             return (indices.Where((val, index) => (index) % width == x)).ToList();
         }
 
-        public List<int> getAllFlips(int x, int y, int v)
-        {
-            List<int> verticalIndices = getVerticalIndices(x, y);       // Board indices in vertical line relative to (x,y) cell. 
-            List<int> horizontalIndices = getHorizontalIndices(x, y);   // Board indices in horizontal line relative to (x,y) cell. 
-            List<int> negativeDiagonalIndices = getNegativeDiagonalIndices(x, y); // Board indices in negative diagonal (\), relative to (x,y) cell.
-            List<int> positiveDiagonalIndices = getPositiveDiagonalIndices(x, y); // Board indices in positive diagonal (/), relative to (x,y) cell.
-            List<int> allFlips = new List<int>();
-            allFlips.AddRange(getFlips(verticalIndices, getListOfValuesFromListOfIndices(verticalIndices), v, ix(x,y)));
-            allFlips.AddRange(getFlips(horizontalIndices, getListOfValuesFromListOfIndices(horizontalIndices), v, ix(x, y)));
-            allFlips.AddRange(getFlips(positiveDiagonalIndices, getListOfValuesFromListOfIndices(positiveDiagonalIndices), v, ix(x, y)));
-            allFlips.AddRange(getFlips(negativeDiagonalIndices, getListOfValuesFromListOfIndices(negativeDiagonalIndices), v, ix(x, y)));
-            return allFlips;
-        }
-
         private List<int> getFlips(List<int> indices, List<int> values, int v, int index)
         {
             List<int> flips = new List<int>();
-            //print("VerticalValues : ", values);
-            //print("VerticalIndices : ", indices);
 
             int indexOfIndex = indices.IndexOf(index);
-            //Console.WriteLine($"Index of index : {indexOfIndex}");
 
             List<int> sublist1 = values.GetRange(0, indexOfIndex);
             List<int> sublist2 = values.GetRange(indexOfIndex + 1, values.Count() - sublist1.Count() - 1);
             sublist1.Reverse();
-
-            //print("SubList1 : ", sublist1);
-            //print("SubList2 : ", sublist2);
 
 
             // Not happy at all with this version but works fine enough for now.
@@ -310,61 +265,16 @@ namespace Othello
         private List<int> getListOfValuesFromListOfIndices(List<int> listOfIndices)
         {
             List<int> listOfValues = new List<int>();
-            foreach(int index in listOfIndices)
+            foreach (int index in listOfIndices)
             {
                 listOfValues.Add(Values[index]);
             }
             return listOfValues;
         }
 
-        public void DisplayBoardDebug()
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                for (int x = 0; x < Width; x++)
-                {
-                    Console.Write($"{Values[ix(x, y)]}");
-                }
-                Console.Write(Environment.NewLine + Environment.NewLine);
-            }
-            Console.ReadLine();
-        }
-
-        public override string ToString()
-        {
-            StringBuilder debug = new StringBuilder();
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    debug.Append($"{Values[ix(x, y)]}");
-                    if(x < width-1)
-                    {
-                        debug.Append(",");
-                    }
-                }
-                debug.Append("\n");
-            }
-            Console.WriteLine(debug.ToString());
-            return debug.ToString();
-        }
-
         private int ix(int x, int y)
         {
             return x + y * width;
-        }
-
-        /// <summary>
-        /// Deep copy
-        /// </summary>
-        public int[] GetValues()
-        {
-            int[] copy = new int[values.Count()];
-            for(int i=0;i<values.Count();i++)
-            {
-                copy[i] = values[i];
-            }
-            return copy;
         }
 
         private static void print(List<int> l)
@@ -382,29 +292,149 @@ namespace Othello
             print(l);
         }
 
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Updates the list of possible next move according to the current turn.
+        /// </summary>
+        /// <param name="v"></param>
+        public void UpdateNextPossibleMoves(int v)
+        {
+            NextPossibleMoves.Clear();
+            for (int i = 0; i < width * height; i++)
+            {
+                if(Values[i]==0)
+                {
+                    /* TODO : improve
+                    * This is easily improvable by stoping the getAllFlips function at first flip found.
+                    * getAllFlips could  also be multithreaded as there is no concurrency possible since
+                    * all lists and sublists are working on different indices.
+                    */
+                    if (getAllFlips(i % width, i / width, v).Count()>0)
+                    {
+                        NextPossibleMoves.Add(i);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds a disk on the played cell and performs flipping operations on disks
+        /// </summary>
+        /// <param name="x">x-composant of the cell played</param>
+        /// <param name="y">y-composant of the cell played</param>
+        /// <param name="v">value of the current player (1 or -1)</param>
+        public void Play(int x, int y, int v)
+        {
+            Values[ix(x, y)] = v;
+            /* Here we assume that the move is valid and playable.
+             * What we have to do is to find which cell will switch color.
+             * To do so we need to save every indices that are in same lines (vertical and horizontal)
+             * and diagonals (positive and negative) as the current cell (x,y).
+             */
+            List<int> listOfFlippedDisksIndices = getAllFlips(x, y, v);
+            foreach(int diskIndex in listOfFlippedDisksIndices)
+            {
+                Values[diskIndex] = v;
+            }
+            UpdateNextPossibleMoves(v*-1); // Update the list of possible moves for next player (v*=-1)
+        }    
+
+        /// <summary>
+        /// Displays the board values.
+        /// </summary>
+        /// <returns>String representing the board state.</returns>
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    sb.Append($"{Values[ix(x, y)]}");
+                    if(x < width-1)
+                    {
+                        sb.Append(",");
+                    }
+                }
+                sb.Append("\n");
+            }
+            return sb.ToString();
+        }
+
+       
+
+        /// <summary>
+        /// Deep copy of the board values
+        /// </summary>
+        public int[] GetValues()
+        {
+            int[] copy = new int[values.Count()];
+            for(int i=0;i<values.Count();i++)
+            {
+                copy[i] = values[i];
+            }
+            return copy;
+        }
+
+       
+
+        /// <summary>
+        /// Get the name of the board.
+        /// </summary>
+        /// <returns></returns>
         public string GetName()
         {
             return this.name;
         }
 
+
+        /// <summary>
+        /// Returns of the move is playable
+        /// </summary>
+        /// <param name="x">X coord. of the move</param>
+        /// <param name="y">Y coord. of the move</param>
+        /// <param name="isWhite">Current turn, true=white.</param>
+        /// <returns></returns>
         public bool IsPlayable(int x, int y, bool isWhite)
         {
             //TODO : This has to be optimized ! (Works for now)
             return (Values[ix(x, y)] == 0) && (this.getAllFlips(x, y, isWhite ? 1 : -1).Count() != 0);
         }
 
+        /// <summary>
+        /// Plays the move.
+        /// </summary>
+        /// <param name="column">X coord of the move</param>
+        /// <param name="line">Y coord. of the move</param>
+        /// <param name="isWhite">Current turn, true=white.</param>
+        /// <returns></returns>
         public bool PlayMove(int column, int line, bool isWhite)
         {
             this.Play(column, line, isWhite ? 1 : -1);
-            return true; //TODO : Find out what this method should return ask olvier.husser@he-arc.ch
+            return true; //TODO : Find out what this method should return, ask olvier.husser@he-arc.ch
         }
 
+        /// <summary>
+        /// This method is used by our AI to find out what the next best move will be.
+        /// NOTE : Not implemented yet !
+        /// </summary>
+        /// <param name="game">board state</param>
+        /// <param name="level">depth of search for minmax algorithm</param>
+        /// <param name="whiteTurn">Current turn, true=white</param>
+        /// <returns></returns>
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
         {
-            //TODO
+            //TODO for IA.
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Get the board state
+        /// </summary>
+        /// <returns>Current board state in shape of 2D int array</returns>
         public int[,] GetBoard()
         {
             int[,] output = new int[height, width];
@@ -418,6 +448,10 @@ namespace Othello
             return output;
         }
 
+        /// <summary>
+        /// Gets the white player's score
+        /// </summary>
+        /// <returns></returns>
         public int GetWhiteScore()
         {
             int score = 0;
@@ -431,6 +465,10 @@ namespace Othello
             return score;
         }
 
+        /// <summary>
+        /// Get the black player's score
+        /// </summary>
+        /// <returns></returns>
         public int GetBlackScore()
         {
             int score = 0;
@@ -443,5 +481,7 @@ namespace Othello
             }
             return score;
         }
+
+        #endregion
     }
 }

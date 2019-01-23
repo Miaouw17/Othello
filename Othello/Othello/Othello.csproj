@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>OCSicon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="IPlayable">
       <HintPath>dll\IPlayable.dll</HintPath>
@@ -116,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="IPlayable.dll" />
+    <Resource Include="OCSicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
