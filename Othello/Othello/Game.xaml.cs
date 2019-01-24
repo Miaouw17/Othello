@@ -136,6 +136,22 @@ namespace Othello
         #region Events
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                Dispatcher.Invoke((Action)delegate ()
+                {
+                    UpdateTimers();
+                });
+            }
+            catch
+            {
+                // try catch to avoid crash on windows close
+            }
+        }
+
+
         private void SaveGame_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -238,6 +254,12 @@ namespace Othello
             lblTurn.Content = isWhiteTurn ? "It's White's turn !" : "It's Black's turn !";
         }
 
+        private void Board_MouseDown(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(e.Source.ToString());
+        }
+
+
         #endregion
 
         #region Private Methods
@@ -253,21 +275,7 @@ namespace Othello
             timer.Start();
         }
 
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            try
-            {
-                Dispatcher.Invoke((Action)delegate ()
-                {
-                    UpdateTimers();
-                });
-            }
-            catch
-            {
-                // try catch to avoid crash on windows close
-            }
-        }
-
+      
         private void GridGeneration(int row, int column)
         {
             // CreateRow
@@ -280,6 +288,7 @@ namespace Othello
                     {
                         FontFamily = new FontFamily("Segoe UI Light"),
                         FontSize = 32,
+                        Foreground = Brushes.Black,
                         VerticalContentAlignment = VerticalAlignment.Center,
                         HorizontalContentAlignment = HorizontalAlignment.Center,
                         Content = $"{i}",
@@ -301,6 +310,7 @@ namespace Othello
                     {
                         FontFamily = new FontFamily("Segoe UI Light"),
                         FontSize = 32,
+                        Foreground = Brushes.Black,
                         VerticalContentAlignment = VerticalAlignment.Center,
                         HorizontalContentAlignment = HorizontalAlignment.Center,
                         Content = Encoding.ASCII.GetString(new byte[] { (byte)index }),
@@ -381,8 +391,6 @@ namespace Othello
                 DisplayBoard();
                 
             }
-
-            UpdatePlayableCells();
             UpdateScore();
 
             if (whiteBlocked ^ blackBlocked)
@@ -442,7 +450,7 @@ namespace Othello
         {
             WhiteScore = board.GetWhiteScore();
             BlackScore = board.GetBlackScore();
-            byte gray = (byte)((WhiteScore / (double)(WhiteScore+BlackScore))*255);
+            byte gray = (byte)(0.2 + (WhiteScore * 0.8 / (double)(WhiteScore+BlackScore))*255);
             bgBoard.Fill = new SolidColorBrush(Color.FromRgb(gray,gray,gray));
         }
 
@@ -450,21 +458,6 @@ namespace Othello
         {
             WhiteTimer = TimeSpan.FromMilliseconds(swWhitePlayer.ElapsedMilliseconds + timeSaveWhite);
             BlackTimer = TimeSpan.FromMilliseconds(swBlackPlayer.ElapsedMilliseconds + timeSaveBlack);
-        }
-
-        private void UpdatePlayableCells()
-        {
-            //Not used yet
-            for (int y = 0; y < board.Height; y++)
-            {
-                for (int x = 0; x < board.Width; x++)
-                {
-                    if (board.IsPlayable(x, y, isWhiteTurn))
-                    {
-
-                    }
-                }
-            }
         }
 
         private void DisplayBoard()
@@ -503,11 +496,7 @@ namespace Othello
             buttonRedo.IsEnabled = (stackRedo.Count() != 0);
         }
 
-        private void Board_MouseDown(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show(e.Source.ToString());
-        }
-
+        
         private int ix(int x, int y)
         {
             return x + y * board.Width;

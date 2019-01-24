@@ -79,10 +79,10 @@ namespace Othello
             }
             int yMid = height >> 1;
             int xMid = width >> 1;
-            Values[ix(xMid - 1, yMid - 1)] = 1;
-            Values[ix(xMid, yMid - 1)] = -1;
-            Values[ix(xMid - 1, yMid)] = -1;
-            Values[ix(xMid, yMid)] = 1;
+            Values[ix(xMid - 1, yMid)] = 1;
+            Values[ix(xMid, yMid)] = -1;
+            Values[ix(xMid - 1, yMid + 1)] = -1;
+            Values[ix(xMid, yMid + 1)] = 1;
             UpdateNextPossibleMoves(1); // 1 : White begins
         }
 
