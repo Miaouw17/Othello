@@ -419,10 +419,7 @@ namespace Othello
         /// <returns></returns>
         public bool PlayMove(int column, int line, bool isWhite)
         {
-            if (column != -1 && line != -1)
-            {
-                this.Play(column, line, isWhite ? 1 : -1);
-            }
+            this.Play(column, line, isWhite ? 1 : -1);
             return true; //TODO : Find out what this method should return, ask olvier.husser@he-arc.ch
         }
 
@@ -438,7 +435,7 @@ namespace Othello
             int bestScore = int.MinValue;
             Tuple<int, int> bestMove = new Tuple<int, int>(-1, -1);
             TreeNode node = new TreeNode(new BoardState(game), whiteTurn);
-            foreach(var child in node.Children(whiteTurn))
+            foreach(var child in node.GetChildren(whiteTurn))
             {
                 int score = AlphaBeta(child.Value, level - 1, int.MinValue, int.MaxValue, whiteTurn);
                 if(score >= bestScore)
@@ -450,18 +447,28 @@ namespace Othello
             return bestMove;
         }
 
-        private int AlphaBeta(TreeNode node, int depth, int a, int b, bool isWhite)
+        /// <summary>
+        /// The Alphabeta algorithm as seen in the AI lecture.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="depth"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="isWhiteTurn"></param>
+        /// <returns></returns>
+        private int AlphaBeta(TreeNode node, int depth, int a, int b, bool isWhiteTurn)
         {
-            if(depth==0 || node.IsTerminal())
+            // Méthode reprise du cours d'IA.
+            if(node.IsLeaf() || depth ==0)
             {
-                return node.Eval(isWhite);
+                return node.Eval(isWhiteTurn);
             }
-            if(node.WhiteTurn == isWhite)
+            if(node.WhiteTurn == isWhiteTurn)
             {
                 int score = int.MinValue;
-                foreach(TreeNode child in node.Children(node.WhiteTurn).Values)
+                foreach(TreeNode child in node.GetChildren(node.WhiteTurn).Values)
                 {
-                    score = Math.Max(score, AlphaBeta(child, depth - 1, a, b, isWhite));
+                    score = Math.Max(score, AlphaBeta(child, depth - 1, a, b, isWhiteTurn));
                     a = Math.Max(a, score);
                     if(a >= b)
                     {
@@ -473,9 +480,9 @@ namespace Othello
             else
             {
                 int score = int.MaxValue;
-                foreach (TreeNode child in node.Children(node.WhiteTurn).Values)
+                foreach (TreeNode child in node.GetChildren(node.WhiteTurn).Values)
                 {
-                    score = Math.Min(score, AlphaBeta(child, depth - 1, a, b, isWhite));
+                    score = Math.Min(score, AlphaBeta(child, depth - 1, a, b, isWhiteTurn));
                     a = Math.Min(b, score);
                     if (a >= b)
                     {

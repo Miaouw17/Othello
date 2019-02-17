@@ -24,8 +24,6 @@ namespace Othello.AI
         public BoardState Board { get; private set; }
         public bool WhiteTurn { get; private set; }
 
-        private Dictionary<Tuple<int, int>, TreeNode> whiteMoves;
-        private Dictionary<Tuple<int, int>, TreeNode> blackMoves;
         private int? eval = null;
 
         public TreeNode(BoardState gameBoard, bool isWhiteTurn)
@@ -60,27 +58,29 @@ namespace Othello.AI
             return s;
         }
 
-        public Dictionary<Tuple<int,int>, TreeNode> Children(bool whiteTurn)
+        /// <summary>
+        /// Returns the children of the current node.
+        /// </summary>
+        /// <param name="isWhiteTurn"></param>
+        /// <returns></returns>
+        public Dictionary<Tuple<int,int>, TreeNode> GetChildren(bool isWhiteTurn)
         {
-            if (whiteTurn && whiteMoves == null)
+            Dictionary<Tuple<int, int>, TreeNode> moves = new Dictionary<Tuple<int, int>, TreeNode>();
+            if (isWhiteTurn)
             {
-                whiteMoves = new Dictionary<Tuple<int,int>,TreeNode> ();
-                foreach (Tuple<int, int> move in GetNextPossibleMoves(Board.Board, whiteTurn))
+                foreach (Tuple<int, int> move in GetNextPossibleMoves(Board.Board, isWhiteTurn))
                 {
-                    BoardState bs = Board.NewBoardWithMove(move, GameProperties.WHITE);
-                    whiteMoves.Add(move, new TreeNode(bs, false));
+                    moves.Add(move, new TreeNode(Board.NewBoardWithMove(move, GameProperties.WHITE), false));
                 }
             }
-            else if (!whiteTurn && blackMoves == null)
+            else
             {
-                blackMoves = new Dictionary<Tuple<int, int>, TreeNode>();
-                foreach (Tuple<int, int> move in GetNextPossibleMoves(Board.Board, !whiteTurn))
+                foreach (Tuple<int, int> move in GetNextPossibleMoves(Board.Board, !isWhiteTurn))
                 {
-                    BoardState bs = Board.NewBoardWithMove(move, GameProperties.BLACK);
-                    blackMoves.Add(move, new TreeNode(bs, false));
+                    moves.Add(move, new TreeNode(Board.NewBoardWithMove(move, GameProperties.BLACK), false));
                 }
             }
-            return whiteTurn ? whiteMoves : blackMoves;
+            return moves;
         }
 
         private List<Tuple<int,int>> GetNextPossibleMoves(int[,] gameBoard, bool whiteTurn)
@@ -90,7 +90,7 @@ namespace Othello.AI
             {
                 for(int x = 0; x < GameProperties.WIDTH; x++)
                 {
-                    if (gameBoard[y,x] == 0)
+                    if (gameBoard[y,x] == GameProperties.EMPTY)
                     {
                         Tuple<int, int> move = new Tuple<int, int>(x, y);
                         if (ValidateMove(move, whiteTurn?-1:1))
@@ -103,24 +103,27 @@ namespace Othello.AI
             return nextMoves;
         }
 
-        public bool IsTerminal()
+        /// <summary>
+        /// Returns if the node is a leaf.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsLeaf()
         {
             return GetNextPossibleMoves(Board.Board, WhiteTurn).Count() == 0;
         }
 
-        private int[] FlatArray(int[,] arr)
-        {
-            int[] r = new int[63];
-            for (int y = 0; y < 7; y++)
-            {
-                for (int x = 0; x < 9; x++)
-                {
-                    r[y * 9 + x] = arr[y, x];
-                }
-            }
-            return r;
-        }
-
+        /// <summary>
+        /// Cette fonction provient du groupe de Bastien Wermeille et Segan Salomon.
+        /// Nous en avons eu besoin car nous avons codé notre Othello avec un board sous forme de tableau 1D,
+        /// hors, la validation d'un move n'était pas du tout optimisée car elle utilisait Linq et on ne pouvait pas se déplacer
+        /// dans les indices aussi facilement qu'avec un tableau 2D, vu qu'ici on utilise un tableau 2D, nous avons donc
+        /// décidé de reprendre un algorithme de validation de move provenant d'un groupe qui avait déjà implémenté leur
+        /// Othello avec un tableau 2D. Ainsi, la validation est plus simple grâce aux directions. On peut s'arrêter au
+        /// premier disque retourné.
+        /// </summary>
+        /// <param name="move"></param>
+        /// <param name="vPlayer"></param>
+        /// <returns></returns>
         private bool ValidateMove(Tuple<int,int> move, int vPlayer)
         {
             if (Board.Board[move.Item2, move.Item1] != GameProperties.EMPTY)
