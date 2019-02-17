@@ -93,6 +93,53 @@ namespace Othello
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// The Alphabeta algorithm as seen in the AI lecture.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="depth"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="isWhiteTurn"></param>
+        /// <returns></returns>
+        private int AlphaBeta(TreeNode node, int depth, int a, int b, bool isWhiteTurn)
+        {
+            // Méthode reprise du cours d'IA.
+            if (node.IsLeaf() || depth == 0)
+            {
+                return node.Eval(isWhiteTurn);
+            }
+            if (node.WhiteTurn == isWhiteTurn)
+            {
+                int score = int.MinValue;
+                foreach (TreeNode child in node.GetChildren(node.WhiteTurn).Values)
+                {
+                    score = Math.Max(score, AlphaBeta(child, depth - 1, a, b, isWhiteTurn));
+                    a = Math.Max(a, score);
+                    if (a >= b)
+                    {
+                        break;
+                    }
+                }
+                return score;
+            }
+            else
+            {
+                int score = int.MaxValue;
+                foreach (TreeNode child in node.GetChildren(node.WhiteTurn).Values)
+                {
+                    score = Math.Min(score, AlphaBeta(child, depth - 1, a, b, isWhiteTurn));
+                    a = Math.Min(b, score);
+                    if (a >= b)
+                    {
+                        break;
+                    }
+                }
+                return score;
+            }
+        }
+
         private void MakeInitialBoard()
         {
             for (var i = 0; i < width * height; i++)
@@ -462,54 +509,6 @@ namespace Othello
             }
             return bestMove;
         }
-
-        /// <summary>
-        /// The Alphabeta algorithm as seen in the AI lecture.
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="depth"></param>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="isWhiteTurn"></param>
-        /// <returns></returns>
-        private int AlphaBeta(TreeNode node, int depth, int a, int b, bool isWhiteTurn)
-        {
-            // Méthode reprise du cours d'IA.
-            if(node.IsLeaf() || depth ==0)
-            {
-                return node.Eval(isWhiteTurn);
-            }
-            if(node.WhiteTurn == isWhiteTurn)
-            {
-                int score = int.MinValue;
-                foreach(TreeNode child in node.GetChildren(node.WhiteTurn).Values)
-                {
-                    score = Math.Max(score, AlphaBeta(child, depth - 1, a, b, isWhiteTurn));
-                    a = Math.Max(a, score);
-                    if(a >= b)
-                    {
-                        break;
-                    }
-                }
-                return score;
-            }
-            else
-            {
-                int score = int.MaxValue;
-                foreach (TreeNode child in node.GetChildren(node.WhiteTurn).Values)
-                {
-                    score = Math.Min(score, AlphaBeta(child, depth - 1, a, b, isWhiteTurn));
-                    a = Math.Min(b, score);
-                    if (a >= b)
-                    {
-                        break;
-                    }
-                }
-                return score;
-            }
-        }
-
-
 
         /// <summary>
         /// Get the board state
