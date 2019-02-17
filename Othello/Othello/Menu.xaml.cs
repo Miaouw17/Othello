@@ -37,6 +37,11 @@ namespace Othello
             this.NavigationService.Navigate(new Game());
         }
 
+        private void NewGameIA_Click(object sender, RoutedEventArgs e)
+        {
+            this.NavigationService.Navigate(new Game(true));
+        }
+
         private void LoadGame_Click(object sender, RoutedEventArgs e)
         {
             // Readfile and load a game

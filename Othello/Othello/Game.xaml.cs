@@ -36,6 +36,7 @@ namespace Othello
         private bool blackBlocked = false;
         private Player p1;
         private Player p2;
+        private bool IAGame = false;
         private Stack<Tuple<int[], bool>> stackUndo;
         private Stack<Tuple<int[], bool>> stackRedo;
         private Stopwatch swWhitePlayer;
@@ -62,6 +63,27 @@ namespace Othello
 
             p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
             p2 = new Player(1, NAME_PLAYER_2, new BitmapImage(uriBlack));
+            this.board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT); //TODO : Change name dynamically, using save name !
+
+            stackUndo = new Stack<Tuple<int[], bool>>();
+            stackRedo = new Stack<Tuple<int[], bool>>();
+
+            InitializeComponent();
+
+            GridGeneration(BOARD_HEIGHT, BOARD_WIDTH);
+
+            UpdateScore();
+
+            initTimer();
+        }
+
+        public Game(bool IAGame)
+        {
+            this.DataContext = this;
+
+            p1 = new Player(0, NAME_PLAYER_1, new BitmapImage(uriWhite));
+            p2 = new Player(1, "IA", new BitmapImage(uriBlack));
+            this.IAGame = IAGame;
             this.board = new OthelloBoard("Board", BOARD_WIDTH, BOARD_HEIGHT); //TODO : Change name dynamically, using save name !
 
             stackUndo = new Stack<Tuple<int[], bool>>();
@@ -363,6 +385,17 @@ namespace Othello
                 board.PlayMove(boardX, boardY, isWhiteTurn);
                 UpdateTurn();
                 board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
+
+                if (IAGame)
+                {
+                    int[,] game = board.GetBoard();
+                    Tuple<int, int> play = board.GetNextMove(game, 5, isWhiteTurn);
+                    board.PlayMove(play.Item1, play.Item2, isWhiteTurn);
+                    UpdateTurn();
+                    board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
+                }
+
+                // Blocked player part
                 if(board.NextPossibleMoves.Count()==0)
                 {
                     whiteBlocked = blackBlocked = true;

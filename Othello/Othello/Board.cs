@@ -384,8 +384,7 @@ namespace Othello
             }
             return copy;
         }
-
-
+  
 
         /// <summary>
         /// Get the name of the board.
@@ -426,7 +425,6 @@ namespace Othello
 
         /// <summary>
         /// This method is used by our AI to find out what the next best move will be.
-        /// NOTE : Not implemented yet !
         /// </summary>
         /// <param name="game">board state</param>
         /// <param name="level">depth of search for minmax algorithm</param>
@@ -493,12 +491,12 @@ namespace Othello
         /// <returns>Current board state in shape of 2D int array</returns>
         public int[,] GetBoard()
         {
-            int[,] output = new int[height, width];
-            for (int i = 0; i < height; i++)
+            int[,] output = new int[width, height];
+            for (int i = 0; i < width; i++)
             {
-                for (int j = 0; j < width; j++)
+                for (int j = 0; j < height; j++)
                 {
-                    output[i, j] = Values[i * width + j];
+                    output[i, j] = Values[j * width + i];
                 }
             }
             return output;
