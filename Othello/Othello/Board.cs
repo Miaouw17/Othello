@@ -483,7 +483,7 @@ namespace Othello
             }
         }
 
-         
+
 
         /// <summary>
         /// Get the board state
@@ -491,12 +491,12 @@ namespace Othello
         /// <returns>Current board state in shape of 2D int array</returns>
         public int[,] GetBoard()
         {
-            int[,] output = new int[width, height];
-            for (int i = 0; i < width; i++)
+            int[,] output = new int[height, width];
+            for (int i = 0; i < height; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (int j = 0; j < width; j++)
                 {
-                    output[i, j] = Values[j * width + i];
+                    output[i, j] = Values[i * width + j];
                 }
             }
             return output;

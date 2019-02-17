@@ -44,11 +44,11 @@ namespace Othello.AI
         private int? DotProduct(int[,] a, int[,] b)
         {
             int s = 0;
-            for (int i = 0; i < GameProperties.WIDTH; i++)
+            for (int y = 0; y < GameProperties.HEIGHT; y++)
             {
-                for (int j = 0; j < GameProperties.HEIGHT; j++)
+                for (int x = 0; x < GameProperties.WIDTH; x++)
                 {
-                    s += a[i, j] * b[i, j];
+                    s += a[y,x] * b[y, x];
                 }
             }
             return s;
@@ -80,15 +80,16 @@ namespace Othello.AI
         private List<Tuple<int,int>> GetNextPossibleMoves(int[,] gameBoard, bool whiteTurn)
         {
             List<Tuple<int, int>> nextMoves = new List<Tuple<int, int>>();
-            for (int i = 0; i < GameProperties.WIDTH; i++)
+            for (int y = 0; y < GameProperties.HEIGHT; y++)
             {
-                for(int j = 0; j < GameProperties.HEIGHT; j++)
+                for(int x = 0; x < GameProperties.WIDTH; x++)
                 {
-                    if (gameBoard[i,j] == 0)
+                    if (gameBoard[y,x] == 0)
                     {
-                        if (new OthelloBoard("", GameProperties.WIDTH, GameProperties.HEIGHT, gameBoard.Cast<int>().ToArray(),whiteTurn).getAllFlips(i, j, whiteTurn?GameProperties.WHITE:GameProperties.BLACK).Count() > 0)
+                        //if (new OthelloBoard("", GameProperties.WIDTH, GameProperties.HEIGHT, gameBoard.Cast<int>().ToArray(),whiteTurn).getAllFlips(i, j, whiteTurn?GameProperties.WHITE:GameProperties.BLACK).Count() > 0)
+                        if (new OthelloBoard("", GameProperties.WIDTH, GameProperties.HEIGHT,FlatArray(gameBoard), whiteTurn).getAllFlips(x, y, whiteTurn ? GameProperties.WHITE : GameProperties.BLACK).Count() > 0)
                         {
-                            nextMoves.Add(new Tuple<int, int>(i,j));
+                            nextMoves.Add(new Tuple<int, int>(x,y));
                         }
                     }
                 }
@@ -99,6 +100,19 @@ namespace Othello.AI
         public bool IsTerminal()
         {
             return GetNextPossibleMoves(Board.Board, WhiteTurn).Count() == 0;
+        }
+
+        private int[] FlatArray(int[,] arr)
+        {
+            int[] r = new int[63];
+            for (int y = 0; y < 7; y++)
+            {
+                for (int x = 0; x < 9; x++)
+                {
+                    r[y * 9 + x] = arr[y, x];
+                }
+            }
+            return r;
         }
     }
 }

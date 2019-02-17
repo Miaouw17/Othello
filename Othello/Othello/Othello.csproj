@@ -60,11 +60,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BoardState.cs" />
-    <Compile Include="GameProperties.cs" />
+    <Compile Include="AI\BoardState.cs" />
+    <Compile Include="AI\GameProperties.cs" />
+    <Compile Include="AI\TreeNode.cs" />
     <Compile Include="Save.cs" />
     <Compile Include="TimerToStringConverter.cs" />
-    <Compile Include="TreeNode.cs" />
     <Page Include="Game.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

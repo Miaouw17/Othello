@@ -18,15 +18,15 @@ namespace Othello.AI
         {
             int width = GameProperties.WIDTH;
             int height = GameProperties.HEIGHT;
-            int[,] newBoard = new int[width, height];
-            for (int i = 0; i < width; i++)
+            int[,] newBoard = new int[height, width];
+            for (int y = 0; y < height; y++)
             {
-                for (int j = 0; j < height; j++)
+                for (int x = 0; x < width; x++)
                 {
-                    newBoard[i, j] = Board[i, j];
+                    newBoard[y, x] = Board[y, x];
                 }
             }
-            newBoard[move.Item1, move.Item2] = vPlayer;
+            newBoard[move.Item2, move.Item1] = vPlayer; //?
             return new BoardState(newBoard);
         }
 
