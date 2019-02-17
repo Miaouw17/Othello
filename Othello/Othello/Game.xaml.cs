@@ -384,12 +384,13 @@ namespace Othello
 
                 board.PlayMove(boardX, boardY, isWhiteTurn);
                 UpdateTurn();
-                board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
+                //board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
+                //DisplayBoard();
 
                 if (IAGame)
                 {
                     int[,] game = board.GetBoard();
-                    Tuple<int, int> play = board.GetNextMove(game, 5, isWhiteTurn);
+                    Tuple<int, int> play = board.GetNextMove(game, AI.GameProperties.DEPTH, isWhiteTurn);
                     board.PlayMove(play.Item1, play.Item2, isWhiteTurn);
                     UpdateTurn();
                     board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);
