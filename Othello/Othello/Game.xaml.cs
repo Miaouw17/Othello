@@ -390,11 +390,7 @@ namespace Othello
                 if (IAGame)
                 {
                     int[,] game = board.GetBoard();
-<<<<<<< HEAD
-                    Tuple<int, int> play = board.GetNextMove(game, 3, isWhiteTurn);
-=======
-                    Tuple<int, int> play = board.GetNextMove(game, AI.GameProperties.DEPTH, isWhiteTurn);
->>>>>>> fd27597cf2fe572c10064cc9f0c0cc120d0249a9
+                    Tuple<int, int> play = board.GetNextMove(game, 5, isWhiteTurn);
                     board.PlayMove(play.Item1, play.Item2, isWhiteTurn);
                     UpdateTurn();
                     board.UpdateNextPossibleMoves(isWhiteTurn ? 1 : -1);

@@ -15,6 +15,12 @@ namespace Othello.AI
                                                  {  7,  1,  3,  1,  1,  1,  3,  1,  7 },
                                                  { -5, -5,  1,  1,  1,  1,  1, -5, -5 },
                                                  { 10, -5,  7,  5,  5,  5,  7, -5, 10 }};
+        private static readonly Tuple<int,int>[] DIRECTIONS =
+        {
+            new Tuple<int, int>(-1, -1), new Tuple<int, int>(0, -1), new Tuple<int, int>(1, -1),
+            new Tuple<int, int>(-1,  0),                             new Tuple<int, int>(1,  0),
+            new Tuple<int, int>(-1,  1), new Tuple<int, int>(0,  1), new Tuple<int, int>(1,  1),
+        };
         public BoardState Board { get; private set; }
         public bool WhiteTurn { get; private set; }
 
@@ -86,10 +92,10 @@ namespace Othello.AI
                 {
                     if (gameBoard[y,x] == 0)
                     {
-                        if (new OthelloBoard("", GameProperties.WIDTH, GameProperties.HEIGHT, gameBoard.Cast<int>().ToArray(),whiteTurn).getAllFlips(x, y, whiteTurn?GameProperties.BLACK:GameProperties.WHITE).Count() > 0)
-                        //if (new OthelloBoard("", GameProperties.WIDTH, GameProperties.HEIGHT,FlatArray(gameBoard), whiteTurn).getAllFlips(x, y, whiteTurn ? GameProperties.BLACK : GameProperties.WHITE).Count() > 0)
+                        Tuple<int, int> move = new Tuple<int, int>(x, y);
+                        if (ValidateMove(move, whiteTurn?-1:1))
                         {
-                            nextMoves.Add(new Tuple<int, int>(x,y));
+                            nextMoves.Add(move);
                         }
                     }
                 }
@@ -113,6 +119,44 @@ namespace Othello.AI
                 }
             }
             return r;
+        }
+
+        private bool ValidateMove(Tuple<int,int> move, int vPlayer)
+        {
+            if (Board.Board[move.Item2, move.Item1] != GameProperties.EMPTY)
+            {
+                return false;
+            }
+            
+            foreach (Tuple<int, int> direction in DIRECTIONS)
+            {
+                bool end = false;
+                int nbTokenReturnedTemp = 0;
+
+                Tuple<int, int> ij = move;
+                ij = new Tuple<int, int>(ij.Item1 + direction.Item1, ij.Item2 + direction.Item2);
+
+                while (ij.Item1 >= 0 && ij.Item1 < GameProperties.WIDTH && ij.Item2 >= 0 && ij.Item2 < GameProperties.HEIGHT && !end)
+                {
+                    int cellState = Board.Board[ij.Item2, ij.Item1];
+                    if (cellState == vPlayer)
+                    {
+                        end = true;
+                        if (nbTokenReturnedTemp > 0)
+                            return true;
+                    }
+                    else if (cellState == GameProperties.EMPTY)
+                    {
+                        end = true;
+                    }
+                    else
+                    {
+                        nbTokenReturnedTemp++;
+                    }
+                    ij = new Tuple<int, int>(ij.Item1 + direction.Item1, ij.Item2 + direction.Item2);
+                }
+            }
+            return false;
         }
     }
 }
