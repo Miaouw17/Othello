@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Othello.AI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,8 @@ namespace Othello
     class OthelloBoard : IPlayable.IPlayable
     {
         #region Attributes
+        private const String NAME_IA = "Equipe Michel-Petroff";
+        public TreeNode node;
         private String name;
         private int[] values;
         private int[] indices;
@@ -21,12 +24,13 @@ namespace Othello
         #endregion
 
         #region Properties
-        public int this[int i] {
+        public int this[int i]
+        {
             get => Values[i];
             set => Values[i] = value;
         }
-        public int Width { get => width;}
-        public int Height { get => height;}
+        public int Width { get => width; }
+        public int Height { get => height; }
         public List<int> NextPossibleMoves { get => nextPossibleMoves; set => nextPossibleMoves = value; }
         public int[] Values { get => values; set => values = value; }
         #endregion
@@ -34,13 +38,14 @@ namespace Othello
         #region Constructors
         public OthelloBoard(String name, int width, int height)
         {
+            this.node = new TreeNode(BoardState.InitialState(), true);
             this.name = name;
             this.height = height;
             this.width = width;
             this.nextPossibleMoves = new List<int>();
             Values = new int[height * width];
             indices = new int[height * width];
-            for(int i = 0; i< height * width; i++)
+            for (int i = 0; i < height * width; i++)
             {
                 indices[i] = i;
             }
@@ -49,6 +54,7 @@ namespace Othello
 
         public OthelloBoard(String name, int width, int height, int[] board, bool isWhiteTurn)
         {
+            this.node = new TreeNode(BoardState.InitialState(), true);
             this.name = name;
             this.height = height;
             this.width = width;
@@ -86,7 +92,7 @@ namespace Othello
             UpdateNextPossibleMoves(1); // 1 : White begins
         }
 
-        private List<int> getAllFlips(int x, int y, int v)
+        public List<int> getAllFlips(int x, int y, int v)
         {
             List<int> verticalIndices = getVerticalIndices(x, y);       // Board indices in vertical line relative to (x,y) cell. 
             List<int> horizontalIndices = getHorizontalIndices(x, y);   // Board indices in horizontal line relative to (x,y) cell. 
@@ -305,14 +311,14 @@ namespace Othello
             NextPossibleMoves.Clear();
             for (int i = 0; i < width * height; i++)
             {
-                if(Values[i]==0)
+                if (Values[i] == 0)
                 {
                     /* TODO : improve
                     * This is easily improvable by stoping the getAllFlips function at first flip found.
                     * getAllFlips could  also be multithreaded as there is no concurrency possible since
                     * all lists and sublists are working on different indices.
                     */
-                    if (getAllFlips(i % width, i / width, v).Count()>0)
+                    if (getAllFlips(i % width, i / width, v).Count() > 0)
                     {
                         NextPossibleMoves.Add(i);
                     }
@@ -335,12 +341,12 @@ namespace Othello
              * and diagonals (positive and negative) as the current cell (x,y).
              */
             List<int> listOfFlippedDisksIndices = getAllFlips(x, y, v);
-            foreach(int diskIndex in listOfFlippedDisksIndices)
+            foreach (int diskIndex in listOfFlippedDisksIndices)
             {
                 Values[diskIndex] = v;
             }
-            UpdateNextPossibleMoves(v*-1); // Update the list of possible moves for next player (v*=-1)
-        }    
+            UpdateNextPossibleMoves(v * -1); // Update the list of possible moves for next player (v*=-1)
+        }
 
         /// <summary>
         /// Displays the board values.
@@ -354,7 +360,7 @@ namespace Othello
                 for (int x = 0; x < width; x++)
                 {
                     sb.Append($"{Values[ix(x, y)]}");
-                    if(x < width-1)
+                    if (x < width - 1)
                     {
                         sb.Append(",");
                     }
@@ -364,7 +370,7 @@ namespace Othello
             return sb.ToString();
         }
 
-       
+
 
         /// <summary>
         /// Deep copy of the board values
@@ -372,14 +378,14 @@ namespace Othello
         public int[] GetValues()
         {
             int[] copy = new int[values.Count()];
-            for(int i=0;i<values.Count();i++)
+            for (int i = 0; i < values.Count(); i++)
             {
                 copy[i] = values[i];
             }
             return copy;
         }
 
-       
+
 
         /// <summary>
         /// Get the name of the board.
@@ -387,7 +393,8 @@ namespace Othello
         /// <returns></returns>
         public string GetName()
         {
-            return this.name;
+            //return this.name;
+            return NAME_IA;
         }
 
 
@@ -427,9 +434,58 @@ namespace Othello
         /// <returns></returns>
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
         {
-            //TODO for IA.
-            throw new NotImplementedException();
+            int bestScore = int.MinValue;
+            Tuple<int, int> bestMove = new Tuple<int, int>(-1, -1);
+            TreeNode node = new TreeNode(new BoardState(game), whiteTurn);
+            foreach(var child in node.Children(whiteTurn))
+            {
+                int score = AlphaBeta(child.Value, level - 1, int.MinValue, int.MaxValue, whiteTurn);
+                if(score >= bestScore)
+                {
+                    bestScore = score;
+                    bestMove = child.Key;
+                }
+            }
+            return bestMove;
         }
+
+        private int AlphaBeta(TreeNode node, int depth, int a, int b, bool isWhite)
+        {
+            if(depth==0 || node.IsTerminal())
+            {
+                return node.Eval(isWhite);
+            }
+            if(node.WhiteTurn == isWhite)
+            {
+                int score = int.MinValue;
+                foreach(TreeNode child in node.Children(node.WhiteTurn).Values)
+                {
+                    score = Math.Max(score, AlphaBeta(child, depth - 1, a, b, isWhite));
+                    a = Math.Max(a, score);
+                    if(a >= b)
+                    {
+                        break;
+                    }
+                }
+                return score;
+            }
+            else
+            {
+                int score = int.MaxValue;
+                foreach (TreeNode child in node.Children(node.WhiteTurn).Values)
+                {
+                    score = Math.Min(score, AlphaBeta(child, depth - 1, a, b, isWhite));
+                    a = Math.Min(b, score);
+                    if (a >= b)
+                    {
+                        break;
+                    }
+                }
+                return score;
+            }
+        }
+
+         
 
         /// <summary>
         /// Get the board state
@@ -483,5 +539,6 @@ namespace Othello
         }
 
         #endregion
+
     }
 }
