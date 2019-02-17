@@ -86,8 +86,8 @@ namespace Othello.AI
                 {
                     if (gameBoard[y,x] == 0)
                     {
-                        //if (new OthelloBoard("", GameProperties.WIDTH, GameProperties.HEIGHT, gameBoard.Cast<int>().ToArray(),whiteTurn).getAllFlips(i, j, whiteTurn?GameProperties.WHITE:GameProperties.BLACK).Count() > 0)
-                        if (new OthelloBoard("", GameProperties.WIDTH, GameProperties.HEIGHT,FlatArray(gameBoard), whiteTurn).getAllFlips(x, y, whiteTurn ? GameProperties.WHITE : GameProperties.BLACK).Count() > 0)
+                        if (new OthelloBoard("", GameProperties.WIDTH, GameProperties.HEIGHT, gameBoard.Cast<int>().ToArray(),whiteTurn).getAllFlips(x, y, whiteTurn?GameProperties.BLACK:GameProperties.WHITE).Count() > 0)
+                        //if (new OthelloBoard("", GameProperties.WIDTH, GameProperties.HEIGHT,FlatArray(gameBoard), whiteTurn).getAllFlips(x, y, whiteTurn ? GameProperties.BLACK : GameProperties.WHITE).Count() > 0)
                         {
                             nextMoves.Add(new Tuple<int, int>(x,y));
                         }

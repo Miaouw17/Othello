@@ -14,7 +14,5 @@ namespace Othello.AI
         public static readonly int WHITE = 1;
         public static readonly int BLACK = -1;
         public static readonly int EMPTY = 0;
-
-        public static readonly int DEPTH = 5;
     }
 }

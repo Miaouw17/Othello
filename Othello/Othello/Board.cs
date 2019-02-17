@@ -419,7 +419,10 @@ namespace Othello
         /// <returns></returns>
         public bool PlayMove(int column, int line, bool isWhite)
         {
-            this.Play(column, line, isWhite ? 1 : -1);
+            if (column != -1 && line != -1)
+            {
+                this.Play(column, line, isWhite ? 1 : -1);
+            }
             return true; //TODO : Find out what this method should return, ask olvier.husser@he-arc.ch
         }
 
