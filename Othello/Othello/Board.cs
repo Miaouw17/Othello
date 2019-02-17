@@ -36,6 +36,22 @@ namespace Othello
         #endregion
 
         #region Constructors
+        public OthelloBoard()
+        {
+            this.node = new TreeNode(BoardState.InitialState(), true);
+            this.name = "Equipe Michel-Petroff";
+            this.height = 7;
+            this.width = 9;
+            this.nextPossibleMoves = new List<int>();
+            Values = new int[height * width];
+            indices = new int[height * width];
+            for (int i = 0; i < height * width; i++)
+            {
+                indices[i] = i;
+            }
+            MakeInitialBoard();
+        }
+
         public OthelloBoard(String name, int width, int height)
         {
             this.node = new TreeNode(BoardState.InitialState(), true);

@@ -22,6 +22,7 @@ namespace Othello.AI
             new Tuple<int, int>(-1,  0),                             new Tuple<int, int>(1,  0),
             new Tuple<int, int>(-1,  1), new Tuple<int, int>(0,  1), new Tuple<int, int>(1,  1),
         };
+
         public BoardState Board { get; private set; }
         public bool WhiteTurn { get; private set; }
 
