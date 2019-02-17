@@ -9,18 +9,20 @@ namespace Othello.AI
     class TreeNode
     {
         private int[,] weightMap9x7 = new int[,]{{ 10, -5,  7,  5,  5,  5,  7, -5, 10 },
-                                                 { -5, -5,  1,  1,  1,  1,  1, -5, -5 },
-                                                 {  7,  1,  3,  1,  1,  1,  3,  1,  7 },
-                                                 {  5,  1,  1,  1,  1,  1,  1,  1,  5 },
-                                                 {  7,  1,  3,  1,  1,  1,  3,  1,  7 },
-                                                 { -5, -5,  1,  1,  1,  1,  1, -5, -5 },
+                                                 { -5, -7,  1,  1,  1,  1,  1, -7, -5 },
+                                                 {  7,  1,  3,  2,  2,  2,  3,  1,  7 },
+                                                 {  5,  1,  2,  1,  1,  1,  2,  1,  5 },
+                                                 {  7,  1,  3,  2,  2,  2,  3,  1,  7 },
+                                                 { -5, -7,  1,  1,  1,  1,  1, -7, -5 },
                                                  { 10, -5,  7,  5,  5,  5,  7, -5, 10 }};
+
         private static readonly Tuple<int,int>[] DIRECTIONS =
         {
             new Tuple<int, int>(-1, -1), new Tuple<int, int>(0, -1), new Tuple<int, int>(1, -1),
             new Tuple<int, int>(-1,  0),                             new Tuple<int, int>(1,  0),
             new Tuple<int, int>(-1,  1), new Tuple<int, int>(0,  1), new Tuple<int, int>(1,  1),
         };
+
         public BoardState Board { get; private set; }
         public bool WhiteTurn { get; private set; }
 
