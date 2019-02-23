@@ -13,6 +13,7 @@ namespace AIMichelPetroff
         private int[,] board;
         private int AIValueOnBoard;
 
+    
         public OthelloBoard()
         {
             board = new int[GameProperties.WIDTH, GameProperties.HEIGHT];
@@ -61,10 +62,7 @@ namespace AIMichelPetroff
 
         public bool IsPlayable(int column, int line, bool isWhite)
         {
-            return 
-                board[column, line] == GameProperties.EMPTY 
-                && 
-                GameOperator.ValidateMove(board, new Tuple<int,int>(column,line), isWhite?GameProperties.WHITE:GameProperties.BLACK);
+            return GameOperator.ValidateMove(board, new Tuple<int,int>(column,line), isWhite?GameProperties.WHITE:GameProperties.BLACK);
         }
 
         public bool PlayMove(int column, int line, bool isWhite)

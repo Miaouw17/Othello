@@ -93,40 +93,39 @@ namespace AIMichelPetroff.AITools
 
         public TreeNode Apply(Tuple<int, int> move)
         {
-            if (GameIsFinished)
+            if (GameIsFinished || !ListPossibleMoves.Keys.Contains(move))
             {
-                throw new Exception("Can't play this move, the game is finished");
+                throw new Exception("Can't play this move.");
             }
 
-            if (!ListPossibleMoves.Keys.Contains(move))
+            TreeNode deepCopy = new TreeNode(this);
+
+            foreach (Tuple<int, int> discsToReverse in deepCopy.ListPossibleMoves[move])
             {
-                throw new Exception("Can't play this move, not a possible move");
+                deepCopy.Board[discsToReverse.Item1, discsToReverse.Item2] = deepCopy.CurrentValue;
+                if (!deepCopy.CurrentPlayerDiscList.Contains(discsToReverse))
+                {
+                    deepCopy.CurrentPlayerDiscList.Add(discsToReverse);
+                }
+                if (deepCopy.OpponentPlayerDiscList.Contains(discsToReverse)) // QMDP check if else
+                {
+                    deepCopy.OpponentPlayerDiscList.Remove(discsToReverse);
+                }
             }
 
-            TreeNode copy = new TreeNode(this);
+            deepCopy.PassToOtherPlayer();
 
-            foreach (Tuple<int, int> discsToReverse in copy.ListPossibleMoves[move])
+            if (deepCopy.ListPossibleMoves.Count <= 0) // QMDP peut-être que ça marche sans
             {
-                copy.Board[discsToReverse.Item1, discsToReverse.Item2] = copy.CurrentValue;
-                if (!copy.CurrentPlayerDiscList.Contains(discsToReverse))
-                    copy.CurrentPlayerDiscList.Add(discsToReverse);
-                if (copy.OpponentPlayerDiscList.Contains(discsToReverse))
-                    copy.OpponentPlayerDiscList.Remove(discsToReverse);
+                deepCopy.PassToOtherPlayer();
+                if (deepCopy.ListPossibleMoves.Count <= 0)
+                    deepCopy.GameIsFinished = true;
             }
 
-            copy.SwitchPlayer();
-
-            if (copy.ListPossibleMoves.Count <= 0) //turn skipped
-            {
-                copy.SwitchPlayer();
-                if (copy.ListPossibleMoves.Count <= 0)
-                    copy.GameIsFinished = true;
-            }
-
-            return copy;
+            return deepCopy;
         }
 
-        public void SwitchPlayer()
+        public void PassToOtherPlayer()
         {
             CurrentValue = CurrentValue == GameProperties.WHITE ? GameProperties.BLACK : GameProperties.WHITE;
             UpdateListPossibleMoves();
@@ -140,11 +139,11 @@ namespace AIMichelPetroff.AITools
 
         public int Evaluate(int playerValue)
         {
-            if (IsVictory())
+            if (GameIsFinished && CurrentPlayerDiscList.Count > OpponentPlayerDiscList.Count)
             {
                 return int.MaxValue - 1;
             }
-            if (IsDefeat())
+            if (GameIsFinished && CurrentPlayerDiscList.Count < OpponentPlayerDiscList.Count)
             {
                 return int.MinValue + 1;
             }
@@ -165,16 +164,6 @@ namespace AIMichelPetroff.AITools
                 eval = score;
             }
             return (int)eval;
-        }
-
-        private bool IsVictory()
-        {
-            return GameIsFinished && CurrentPlayerDiscList.Count > OpponentPlayerDiscList.Count;
-        }
-
-        private bool IsDefeat()
-        {
-            return GameIsFinished && CurrentPlayerDiscList.Count < OpponentPlayerDiscList.Count;
         }
 
         public bool IsLeaf()
