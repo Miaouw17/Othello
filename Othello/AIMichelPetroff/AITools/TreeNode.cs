@@ -161,9 +161,9 @@ namespace AIMichelPetroff.AITools
             if (eval == null)
             {
                 int score = 0;
-                for (int y = 0; y < GameProperties.WIDTH; y++)
+                for (int y = 0; y < GameProperties.HEIGHT; y++)
                 {
-                    for (int x = 0; x < GameProperties.HEIGHT; x++)
+                    for (int x = 0; x < GameProperties.WIDTH; x++)
                     {
                         if (Board[x, y] == playerValue)
                         {
