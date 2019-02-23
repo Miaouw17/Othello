@@ -29,11 +29,11 @@ namespace AIMichelPetroff.AITools
         public int[,] Board;
         public int CurrentValue;
 
-        private List<Tuple<int, int>> TokenPlayerWhite;
-        private List<Tuple<int, int>> TokenPlayerBlack;
+        private List<Tuple<int, int>> DiscPlayerWhiteList;
+        private List<Tuple<int, int>> DiscPlayerBlackList;
 
-        private List<Tuple<int, int>> CurrentToken { get { return CurrentValue == GameProperties.WHITE ? TokenPlayerWhite : TokenPlayerBlack; } }
-        private List<Tuple<int, int>> OpponentToken { get { return CurrentValue == GameProperties.BLACK ? TokenPlayerWhite : TokenPlayerBlack; } }
+        private List<Tuple<int, int>> CurrentPlayerDiscList { get { return CurrentValue == GameProperties.WHITE ? DiscPlayerWhiteList : DiscPlayerBlackList; } }
+        private List<Tuple<int, int>> OpponentPlayerDiscList { get { return CurrentValue == GameProperties.BLACK ? DiscPlayerWhiteList : DiscPlayerBlackList; } }
 
         private bool GameIsFinished;
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMoves { get; set; }
@@ -57,14 +57,14 @@ namespace AIMichelPetroff.AITools
             CurrentValue = treeNode.CurrentValue;
 
             // CurrentPlayerTokens Copy
-            TokenPlayerWhite = new List<Tuple<int, int>>();
-            foreach (Tuple<int, int> token in treeNode.TokenPlayerWhite)
-                TokenPlayerWhite.Add(new Tuple<int, int>(token.Item1, token.Item2));
+            DiscPlayerWhiteList = new List<Tuple<int, int>>();
+            foreach (Tuple<int, int> token in treeNode.DiscPlayerWhiteList)
+                DiscPlayerWhiteList.Add(new Tuple<int, int>(token.Item1, token.Item2));
 
             // OpponentPlayerTokens Copy
-            TokenPlayerBlack = new List<Tuple<int, int>>();
-            foreach (Tuple<int, int> token in treeNode.TokenPlayerBlack)
-                TokenPlayerBlack.Add(new Tuple<int, int>(token.Item1, token.Item2));
+            DiscPlayerBlackList = new List<Tuple<int, int>>();
+            foreach (Tuple<int, int> token in treeNode.DiscPlayerBlackList)
+                DiscPlayerBlackList.Add(new Tuple<int, int>(token.Item1, token.Item2));
 
             GameIsFinished = treeNode.GameIsFinished;
         }
@@ -75,16 +75,16 @@ namespace AIMichelPetroff.AITools
             Board = board;
             CurrentValue = currentPlayerValue;
             ListPossibleMoves = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
-            TokenPlayerWhite = new List<Tuple<int, int>>();
-            TokenPlayerBlack = new List<Tuple<int, int>>();
+            DiscPlayerWhiteList = new List<Tuple<int, int>>();
+            DiscPlayerBlackList = new List<Tuple<int, int>>();
             for (int x = 0; x < Board.GetLength(0); ++x)
             {
                 for (int y = 0; y < Board.GetLength(1); ++y)
                 {
                     if (Board[x, y] == GameProperties.WHITE)
-                        TokenPlayerWhite.Add(new Tuple<int, int>(x, y));
+                        DiscPlayerWhiteList.Add(new Tuple<int, int>(x, y));
                     else if (Board[x, y] == GameProperties.BLACK)
-                        TokenPlayerBlack.Add(new Tuple<int, int>(x, y));
+                        DiscPlayerBlackList.Add(new Tuple<int, int>(x, y));
                 }
             }
 
@@ -105,13 +105,13 @@ namespace AIMichelPetroff.AITools
 
             TreeNode copy = new TreeNode(this);
 
-            foreach (Tuple<int, int> tokenToReverse in copy.ListPossibleMoves[move])
+            foreach (Tuple<int, int> discsToReverse in copy.ListPossibleMoves[move])
             {
-                copy.Board[tokenToReverse.Item1, tokenToReverse.Item2] = copy.CurrentValue;
-                if (!copy.CurrentToken.Contains(tokenToReverse))
-                    copy.CurrentToken.Add(tokenToReverse);
-                if (copy.OpponentToken.Contains(tokenToReverse))
-                    copy.OpponentToken.Remove(tokenToReverse);
+                copy.Board[discsToReverse.Item1, discsToReverse.Item2] = copy.CurrentValue;
+                if (!copy.CurrentPlayerDiscList.Contains(discsToReverse))
+                    copy.CurrentPlayerDiscList.Add(discsToReverse);
+                if (copy.OpponentPlayerDiscList.Contains(discsToReverse))
+                    copy.OpponentPlayerDiscList.Remove(discsToReverse);
             }
 
             copy.SwitchPlayer();
@@ -169,12 +169,12 @@ namespace AIMichelPetroff.AITools
 
         private bool IsVictory()
         {
-            return GameIsFinished && CurrentToken.Count > OpponentToken.Count;
+            return GameIsFinished && CurrentPlayerDiscList.Count > OpponentPlayerDiscList.Count;
         }
 
         private bool IsDefeat()
         {
-            return GameIsFinished && CurrentToken.Count < OpponentToken.Count;
+            return GameIsFinished && CurrentPlayerDiscList.Count < OpponentPlayerDiscList.Count;
         }
 
         public bool IsLeaf()

@@ -39,7 +39,7 @@ namespace AIMichelPetroff.AITools
             foreach (Tuple<int, int> direction in DIRECTIONS)
             {
                 bool end = false;
-                int nbTokenReturnedTemp = 0;
+                int nbDiscReturnedTemp = 0;
 
                 Tuple<int, int> ij = move;
                 ij = new Tuple<int, int>(ij.Item1 + direction.Item1, ij.Item2 + direction.Item2);
@@ -50,7 +50,7 @@ namespace AIMichelPetroff.AITools
                     if (cellState == vPlayer)
                     {
                         end = true;
-                        if (nbTokenReturnedTemp > 0)
+                        if (nbDiscReturnedTemp > 0)
                             return true;
                     }
                     else if (cellState == GameProperties.EMPTY)
@@ -59,7 +59,7 @@ namespace AIMichelPetroff.AITools
                     }
                     else
                     {
-                        nbTokenReturnedTemp++;
+                        nbDiscReturnedTemp++;
                     }
                     ij = new Tuple<int, int>(ij.Item1 + direction.Item1, ij.Item2 + direction.Item2);
                 }
@@ -74,42 +74,42 @@ namespace AIMichelPetroff.AITools
             int currentValue = isWhite ? GameProperties.WHITE : GameProperties.BLACK;
             int opponentValue = isWhite ? GameProperties.BLACK : GameProperties.WHITE;
 
-            List<Tuple<int, int>> currentTokens = GetDiscs(game, currentValue);
+            List<Tuple<int, int>> currentDiscs = GetDiscs(game, currentValue);
 
-            foreach (Tuple<int, int> tokenStart in currentTokens)
+            foreach (Tuple<int, int> discStart in currentDiscs)
             {
                 foreach (Tuple<int, int> direction in DIRECTIONS)
                 {
-                    Tuple<int, int> tokenPosition = null;
+                    Tuple<int, int> discPosition = null;
                     HashSet<Tuple<int, int>> toReverse = new HashSet<Tuple<int, int>>();
                     bool directionIsEligibleForAMove = true;
                     int i = 1;
 
                     while (true)
                     {
-                        tokenPosition = new Tuple<int, int>(tokenStart.Item1 + i * direction.Item1, tokenStart.Item2 + i * direction.Item2);
+                        discPosition = new Tuple<int, int>(discStart.Item1 + i * direction.Item1, discStart.Item2 + i * direction.Item2);
 
-                        if (!BoardContains(game, tokenPosition))
+                        if (!BoardContains(game, discPosition))
                         {
                             directionIsEligibleForAMove = false;
                             break;
                         }
 
-                        int valueOnBoardAtTokenPosition = game[tokenPosition.Item1, tokenPosition.Item2];
+                        int valueOnBoardAtDiscPosition = game[discPosition.Item1, discPosition.Item2];
 
                         // The direct direction neighbour is empty or the 
-                        if (toReverse.Count == 0 && valueOnBoardAtTokenPosition == GameProperties.EMPTY || valueOnBoardAtTokenPosition == currentValue)
+                        if (toReverse.Count == 0 && valueOnBoardAtDiscPosition == GameProperties.EMPTY || valueOnBoardAtDiscPosition == currentValue)
                         {
                             directionIsEligibleForAMove = false;
                             break;
                         }
-                        else if (valueOnBoardAtTokenPosition == opponentValue)
+                        else if (valueOnBoardAtDiscPosition == opponentValue)
                         {
-                            toReverse.Add(tokenPosition);
+                            toReverse.Add(discPosition);
                         }
-                        else if (valueOnBoardAtTokenPosition == GameProperties.EMPTY)
+                        else if (valueOnBoardAtDiscPosition == GameProperties.EMPTY)
                         {
-                            toReverse.Add(tokenPosition);
+                            toReverse.Add(discPosition);
                             break;
                         }
                         i++;
@@ -117,10 +117,10 @@ namespace AIMichelPetroff.AITools
 
                     if (directionIsEligibleForAMove)
                     {
-                        if (listPossibleMoves.ContainsKey(tokenPosition))
-                            listPossibleMoves[tokenPosition].UnionWith(toReverse);
+                        if (listPossibleMoves.ContainsKey(discPosition))
+                            listPossibleMoves[discPosition].UnionWith(toReverse);
                         else
-                            listPossibleMoves.Add(tokenPosition, toReverse);
+                            listPossibleMoves.Add(discPosition, toReverse);
                     }
                 }
             }

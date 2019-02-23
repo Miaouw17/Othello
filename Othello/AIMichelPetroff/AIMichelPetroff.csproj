@@ -7,7 +7,7 @@
     <ProjectGuid>{FC131236-68FE-40C1-A460-6EEB4EACA1CF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>AIMichelPetroff</RootNamespace>
-    <AssemblyName>OthelloQuDa</AssemblyName>
+    <AssemblyName>OthelloQMDP</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
