@@ -8,9 +8,7 @@ namespace AIMichelPetroff.AITools
 {
     class TreeNode
     {
-
-
-        private int[,] weightMap9x7 = 
+        private static readonly int[,] weightMap9x7 = 
             {{  10,  -5,   7,   5,   7,  -6,  10},
              {  -5,  -7,   1,   1,   1,  -7,  -5},
              {   7,   1,   3,   2,   3,   1,   7},
@@ -30,7 +28,6 @@ namespace AIMichelPetroff.AITools
 
         public int[,] Board;
         public int CurrentValue;
-        public int OpponentValue { get { return CurrentValue == GameProperties.WHITE ? GameProperties.BLACK : GameProperties.WHITE; } }
 
         private List<Tuple<int, int>> TokenPlayerWhite;
         private List<Tuple<int, int>> TokenPlayerBlack;
@@ -92,12 +89,6 @@ namespace AIMichelPetroff.AITools
             }
 
             UpdateListPossibleMoves();
-        }
-
-        public List<Tuple<int, int>> PossibleMoves()
-        {
-            List<Tuple<int, int>> moves = ListPossibleMoves.Keys.ToList<Tuple<int, int>>();
-            return moves;
         }
 
         public TreeNode Apply(Tuple<int, int> move)
@@ -186,84 +177,9 @@ namespace AIMichelPetroff.AITools
             return GameIsFinished && CurrentToken.Count < OpponentToken.Count;
         }
 
-
-        private List<Tuple<int, int>> GetNextPossibleMoves(int[,] gameBoard, bool whiteTurn)
-        {
-            List<Tuple<int, int>> nextMoves = new List<Tuple<int, int>>();
-            for (int y = 0; y < GameProperties.WIDTH; y++)
-            {
-                for (int x = 0; x < GameProperties.HEIGHT; x++)
-                {
-                    if (gameBoard[y, x] == GameProperties.EMPTY)
-                    {
-                        Tuple<int, int> move = new Tuple<int, int>(x, y);
-                        if (ValidateMove(move, whiteTurn ? 0 : 1))
-                        {
-                            nextMoves.Add(move);
-                        }
-                    }
-                }
-            }
-            return nextMoves;
-        }
-
-        /// <summary>
-        /// Returns if the node is a leaf.
-        /// </summary>
-        /// <returns></returns>
         public bool IsLeaf()
         {
             return GameIsFinished;
-        }
-
-        /// <summary>
-        /// Cette fonction provient du groupe de Bastien Wermeille et Segan Salomon.
-        /// Nous en avons eu besoin car nous avons codé notre Othello avec un board sous forme de tableau 1D,
-        /// hors, la validation d'un move n'était pas du tout optimisée car elle utilisait Linq et on ne pouvait pas se déplacer
-        /// dans les indices aussi facilement qu'avec un tableau 2D, vu qu'ici on utilise un tableau 2D, nous avons donc
-        /// décidé de reprendre un algorithme de validation de move provenant d'un groupe qui avait déjà implémenté leur
-        /// Othello avec un tableau 2D. Ainsi, la validation est plus simple grâce aux directions. On peut s'arrêter au
-        /// premier disque retourné.
-        /// </summary>
-        /// <param name="move"></param>
-        /// <param name="vPlayer"></param>
-        /// <returns></returns>
-        private bool ValidateMove(Tuple<int, int> move, int vPlayer)
-        {
-            if (Board[move.Item1, move.Item2] != GameProperties.EMPTY)
-            {
-                return false;
-            }
-
-            foreach (Tuple<int, int> direction in DIRECTIONS)
-            {
-                bool end = false;
-                int nbTokenReturnedTemp = 0;
-
-                Tuple<int, int> ij = move;
-                ij = new Tuple<int, int>(ij.Item1 + direction.Item1, ij.Item2 + direction.Item2);
-
-                while (ij.Item1 >= 0 && ij.Item1 < GameProperties.WIDTH && ij.Item2 >= 0 && ij.Item2 < GameProperties.HEIGHT && !end)
-                {
-                    int cellState = Board[ij.Item1, ij.Item2];
-                    if (cellState == vPlayer)
-                    {
-                        end = true;
-                        if (nbTokenReturnedTemp > 0)
-                            return true;
-                    }
-                    else if (cellState == GameProperties.EMPTY)
-                    {
-                        end = true;
-                    }
-                    else
-                    {
-                        nbTokenReturnedTemp++;
-                    }
-                    ij = new Tuple<int, int>(ij.Item1 + direction.Item1, ij.Item2 + direction.Item2);
-                }
-            }
-            return false;
         }
 
         private void UpdateListPossibleMoves()

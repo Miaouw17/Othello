@@ -66,6 +66,7 @@ namespace AIMichelPetroff.AITools
             }
             return false;
         }
+
         public static Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> GetPossibleMoves(int[,] game, bool isWhite)
         {
             Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> listPossibleMoves = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
