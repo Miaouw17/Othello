@@ -56,15 +56,15 @@ namespace AIMichelPetroff.AITools
             // CurrentPlayerValue Copy
             CurrentValue = treeNode.CurrentValue;
 
-            // CurrentPlayerTokens Copy
+            // CurrentPlayerDiscs Copy
             DiscPlayerWhiteList = new List<Tuple<int, int>>();
-            foreach (Tuple<int, int> token in treeNode.DiscPlayerWhiteList)
-                DiscPlayerWhiteList.Add(new Tuple<int, int>(token.Item1, token.Item2));
+            foreach (Tuple<int, int> disc in treeNode.DiscPlayerWhiteList)
+                DiscPlayerWhiteList.Add(new Tuple<int, int>(disc.Item1, disc.Item2));
 
-            // OpponentPlayerTokens Copy
+            // OpponentPlayerDiscs Copy
             DiscPlayerBlackList = new List<Tuple<int, int>>();
-            foreach (Tuple<int, int> token in treeNode.DiscPlayerBlackList)
-                DiscPlayerBlackList.Add(new Tuple<int, int>(token.Item1, token.Item2));
+            foreach (Tuple<int, int> disc in treeNode.DiscPlayerBlackList)
+                DiscPlayerBlackList.Add(new Tuple<int, int>(disc.Item1, disc.Item2));
 
             GameIsFinished = treeNode.GameIsFinished;
         }
